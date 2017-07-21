@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TDC 2017 Map</title>
+  </head>
+  <body>
+    <div data-role="page">
+      <!-- The side panel with buttons and inputs -->
+      <div data-role="panel" data-display="overlay" id="side-panel">
+        <div class="header">
+          <img src="img/trondheim-coa.svg" class="coa" alt="Coat of arms of Trondheim municipality">
+          <h1>Map of Trondheim for TDC 2017 Attendees</h1>
+        </div>
+        <!-- "Date of the event" section -->
+        <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
+          <h4>On the day of the event</h4>
+          <input id="show" type="button" value="Show places">
+          <input id="hide" type="button" value="Hide places">
+        </div>
+        <!-- "Find places" section -->
+        <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
+          <h4>Find places</h4>
+          <input id="place-category" type="text" placeholder="e.g. cafe or hotel">
+            <p>within</p>
+            <select id="max-duration">
+              <option value="10">10 min</option>
+              <option value="15">15 min</option>
+              <option value="30">30 min</option>
+              <option value="60">1 hour</option>
+            </select>
+            <select id="mode">
+              <option value="DRIVING">drive</option>
+              <option value="WALKING">walk</option>
+              <option value="BICYCLING">bike</option>
+              <option value="TRANSIT">transit ride</option>
+            </select>
+            <p>of my location</p>
+            <input id="where-am-i" type="button" value="Show my location">
+            <h5>Show only places:</h5>
+            <input id="open-now" type="checkbox" value="false">
+            <label for="open-now">Open now</label>
+            <input id="rated-four-plus" type="checkbox" value="false">
+            <label for="rated-four-plus">Rated 4+</label>
+            <label for="neighbourhood">Located in:</label>
+            <select id="neighbourhood" data-bind="foreach: neighbourhoods">
+              <option data-bind="text: name"></option>
+            </select>
+        </div>
+      </div>
+      <!-- The map with a menu button overlay -->
+      <div id="map"></div>
+      <div class="panel-opener">
+        <a href="#side-panel"><i class="material-icons">menu</i></a>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+    <script async defer src="js/app.js"></script>
+    <script async defer src="js/conf-data.js"></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?libraries=geometry,drawing,places&key=AIzaSyBrT-kgZjuDd3EOcaN8dzBXWnBCYfIFh0I&callback=initMap&language=en"></script>
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Raleway:300" rel="stylesheet">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+  </body>
+</html>
