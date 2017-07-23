@@ -42,3 +42,4 @@
 # Acknowledgements
 * The map style is based on the [Muted Blue theme by Jon Edmiston](https://snazzymaps.com/style/83/muted-blue).
 * The Coat of arms of Trondheim is by [Wikipedia](https://en.wikipedia.org/wiki/File:Trondheim_komm.svg) user [Mysid](https://en.wikipedia.org/wiki/User:Mysid).
+* Icons are generated with [The Map Icons Collection](https://mapicons.mapsmarker.com).
