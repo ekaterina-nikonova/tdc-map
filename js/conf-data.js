@@ -1,28 +1,62 @@
 function ViewModel() {
-  // Places for the initial array of markers; id's are found via Places TextSearch
+  // Places for the initial array of markers
   this.confPlaces = ko.observableArray([
     { // Clarion Hotel & Congress
-      id: 'c02a8745e79d45cfd0484de5b3d2b4d32b1e18f4'
+      name: 'Clarion Hotel & Congress',
+      types: ['venue'],
+      formatted_address: 'Brattørkaia 1, 7010 Trondheim, Norway',
+      geometry: {location: {lat: 63.44002739999999, lng: 10.4024274}},
+      place_id: 'ChIJq3jrGHYxbUYRWCokKUAb-00',
+      notes: 'The Conference venue: Monday 30 October at 9:00–18:00'
     },
     { // Central station
-      id: 'dcccefe7fdb0c1758f003d1ef51c2040f3fe9680'
+      name: 'Trondheim S - Central Station',
+      types: ['train_station'],
+      formatted_address: 'Fosenkaia 1, 7010 Trondheim',
+      geometry: {location: {lat: 63.43669999999999, lng: 10.3988199}},
+      place_id: 'ChIJ8QoyqZ0xbUYRzsViX0zp1e8',
+      notes: 'The main railway station; trains from Værnes airport arrive at 6:32, 6:53, 7:32, 7:47, 8:00 and 8:32'
     },
     { // Bus station
-      id: '3fa15060ef030bebfc263d331553c50c1c50b690'
+      name: 'Bussterminal',
+      types: ['bus_station'],
+      formatted_address: '7010 Trondheim, S 13',
+      geometry: {location: {lat: 63.4360928, lng: 10.4011951}},
+      place_id: 'ChIJVQvezJ0xbUYRZJL-y6y3hOI',
+      notes: 'Buses 3, 19, 46, 48, 54, 55, 60, 75, 92, 94, 310, 320, 330, 340, 350, 410, 450, 470, 480, 4101'
     },
     // Places that open before 9 AM
     { // Godt Brød bakery
-      id: 'dead2f8867d2721d9a8f2cf7050898c75f441698'
+      name: 'Godt Brød Bakeriet',
+      types: ['Bakery'],
+      formatted_address: 'Thomas Angells gate 16',
+      geometry: {location: {lat: 63.4328076, lng: 10.3981416}},
+      place_id: 'ChIJD6jnjpsxbUYRnbiHT9RoYmk',
+      notes: 'Opens at 6 AM'
     },
     { // Starbucks
-      id: '35228c93e7034512e871c46187405e86b8940403'
+      name: 'Starbucks',
+      types: ['Cafe'],
+      formatted_address: 'Kongens gate 14B',
+      geometry: {location: {lat: 63.43060060000001, lng: 10.3970648}},
+      place_id: 'ChIJWwkjs5sxbUYRQfhT0Rg143o',
+      notes: 'Opens at 7:00'
     },
     { // Baker'n på torget (Rosenborg bakeri)
-      // id: '4448436d61107f2635e1ab37913b85a466af871c'
-      id: 'ChIJpSsF-ZoxbUYRQOG9Ddb_7VE'
+      name: 'Baker\'n på Torget (Rosenborg bakeri)',
+      types: ['Bakery'],
+      formatted_address: 'Munkegata 22',
+      geometry: {location: {lat: 63.42993519999999, lng: 10.3945135}},
+      place_id: 'ChIJpSsF-ZoxbUYRQOG9Ddb_7VE',
+      notes: 'Opens at 7:00'
     },
     { // Café le Frère
-      id: 'c95907fc45e9b960e43572739e8bcd560aa4e199'
+      name: 'Café le Frère',
+      types: ['Cafe'],
+      formatted_address: 'Søndre gate 27',
+      geometry: {location: {lat: 63.4343469, lng: 10.4004243}},
+      place_id: 'ChIJ7X0oFJwxbUYR4h2FMXC0cKc',
+      notes: 'Coffee bar, opens at 8:00'
     }
   ]);
 

@@ -54,3 +54,8 @@ body {
   float: left;
   margin-right: 16px;
 }
+
+#iw-panorama {
+  width: 400px;
+  height: 300px;
+}
