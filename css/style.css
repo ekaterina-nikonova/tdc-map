@@ -6,6 +6,18 @@
   font-weight: 300;
   box-sizing: border-box;
   vertical-align: middle;
+  text-shadow: none;
+}
+
+.iw-place-name,
+.iw-place-type {
+  display: inline;
+  vertical-align: baseline;
+}
+
+.iw-place-address,
+#iw-notes {
+  margin: 5px 0;
 }
 
 h1 {
@@ -55,7 +67,21 @@ body {
   margin-right: 16px;
 }
 
+#iw-pano-photos-btn {
+  margin: 5px 0;
+}
+
 #iw-panorama {
   width: 400px;
   height: 300px;
+  text-align: center;
+  background-color: white !important;
+}
+
+.iw-photo {
+  margin: auto;
+}
+
+.iw-photo-comment {
+
 }

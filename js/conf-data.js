@@ -10,19 +10,19 @@ function ViewModel() {
       notes: 'The Conference venue: Monday 30 October at 9:00–18:00'
     },
     { // Central station
-      name: 'Trondheim S - Central Station',
+      name: 'Trondheim S',
       types: ['train_station'],
       formatted_address: 'Fosenkaia 1, 7010 Trondheim',
       geometry: {location: {lat: 63.43669999999999, lng: 10.3988199}},
       place_id: 'ChIJ8QoyqZ0xbUYRzsViX0zp1e8',
-      notes: 'The main railway station; trains from Værnes airport arrive at 6:32, 6:53, 7:32, 7:47, 8:00 and 8:32'
+      notes: 'Trains from Værnes airport arrive at 6:32, 6:53, 7:32, 7:47, 8:00 and 8:32'
     },
     { // Bus station
       name: 'Bussterminal',
       types: ['bus_station'],
       formatted_address: '7010 Trondheim, S 13',
       geometry: {location: {lat: 63.4360928, lng: 10.4011951}},
-      place_id: 'ChIJVQvezJ0xbUYRZJL-y6y3hOI',
+      place_id: 'ChIJo-Y7M5wxbUYRYcW5XF9iHSk',
       notes: 'Buses 3, 19, 46, 48, 54, 55, 60, 75, 92, 94, 310, 320, 330, 340, 350, 410, 450, 470, 480, 4101'
     },
     // Places that open before 9 AM
