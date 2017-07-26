@@ -117,7 +117,15 @@ var styles = [
       icon: icon,
       pic: 'panorama'
     });
-    console.log(marker);
+
+    // Change appearance on hover
+    marker.addListener('mouseover', function() {
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+    });
+    marker.addListener('mouseout', function() {
+      marker.setAnimation('none');
+    });
+
     // StreetView in the info window
     var streetViewService = new google.maps.StreetViewService();
     var radius = 50;
@@ -167,11 +175,11 @@ var styles = [
               (photos.length > 1 ? ' - click to view next' : '') +
               '</p>');
             // Show the 1st photo and click on it to display the next one.
-            $('#iw-panorama').append('<img class=\"iw-photo\" src=\"' + photos[0].getUrl({maxWidth: 400, maxHeight: 300}) + '\">');
+            $('#iw-panorama').append('<img class=\"iw-photo\" src=\"' + photos[0].getUrl({maxWidth: 800, maxHeight: 600}) + '\">'); // A larger image can be zoomed in to iinspect details
             $('.iw-photo').click(function() {
               // Update the photo and the count. After the last photo, start over.
               photoNum = photoNum === photos.length - 1 ? 0 : photoNum + 1;
-              $('.iw-photo').attr('src', photos[photoNum].getUrl({maxWidth: 400, maxHeight: 300}));
+              $('.iw-photo').attr('src', photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600}));
               $('.iw-photo-comment').empty();
               $('.iw-photo-comment').append('Photo ' +
                 (photoNum + 1) + '\/' + photos.length +
@@ -222,3 +230,5 @@ var styles = [
   $('#hide').click(hideConfMarkers);
 
 };
+
+// Open and close side panels

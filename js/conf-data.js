@@ -43,10 +43,10 @@ function ViewModel() {
       notes: 'Opens at 7:00'
     },
     { // Baker'n på torget (Rosenborg bakeri)
-      name: 'Baker\'n på Torget (Rosenborg bakeri)',
+      name: 'Rosenborg bakeri - Rema 1000',
       types: ['Bakery'],
       formatted_address: 'Munkegata 22',
-      geometry: {location: {lat: 63.42993519999999, lng: 10.3945135}},
+      geometry: {location: {lat: 63.430189, lng: 10.394318}},
       place_id: 'ChIJpSsF-ZoxbUYRQOG9Ddb_7VE',
       notes: 'Opens at 7:00'
     },
@@ -88,6 +88,28 @@ function ViewModel() {
 
   this.favourites = ko.observableArray([
   ]);
+
+  this.openLeftPanel = function() {
+    var panel = $('#left-panel');
+    panel.animate({left: '0'});
+    panel.on('swipeleft', function() {
+      panel.animate({left: '-300px'});
+    });
+    $('#map').click(function() {
+      panel.animate({left: '-300px'});
+    });
+  };
+
+  this.openRightPanel = function() {
+    var panel = $('#right-panel');
+    panel.animate({right: '0'});
+    panel.on('swiperight', function() {
+      panel.animate({right: '-300px'});
+    });
+    $('#map').click(function() {
+      panel.animate({right: '-300px'});
+    });
+  };
 };
 
 ko.applyBindings(new ViewModel());
