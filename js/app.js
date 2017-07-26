@@ -2,62 +2,71 @@ var confMarkers = [];
 
 function initMap() {
   // Map styles
-var styles = [
-  {
-    featureType: 'all',
-    elementType: 'all',
-    stylers: [{ hue: '#e7ecf0' }]
-  },
-  {
-    featureType: 'poi',
-    elementType: 'all',
-    stylers: [{ saturation : -50 }]
-  },
-  {
-    featureType: 'road',
-    elementType: 'all',
-    stylers: [{ saturation: -70 }]
-  },
-  {
-    featureType: 'road',
-    elementType: 'geometry.stroke',
-    stylers: [{ lightness: 51 }]
-  },
-  {
-    featureType: 'transit',
-    elementType: 'all',
-    stylers: [{ saturation: -43 }]
-  },
-  {
-    featureType: 'transit.line',
-    elementType: 'geometry.fill',
-    stylers: [{ color: '#79baec' }]
-  },
-  {
-    featureType: 'water',
-    elementType: 'all',
-    stylers: [{ saturation: -60 }]
-  },
-  {
-    featureType: 'landscape.natural',
-    elementType: 'fill',
-    stylers: [{ hue: '#00ffdd' }]
-  },
-  {
-    featureType: 'poi.park',
-    elementType: 'fill',
-    stylers: [{ hue: '#00ff33' }]
-  }
-];
+  var styles = [
+    {
+      featureType: 'all',
+      elementType: 'all',
+      stylers: [{ hue: '#e7ecf0' }]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'all',
+      stylers: [{ saturation : -50 }]
+    },
+    {
+      featureType: 'road',
+      elementType: 'all',
+      stylers: [{ saturation: -70 }]
+    },
+    {
+      featureType: 'road',
+      elementType: 'geometry.stroke',
+      stylers: [{ lightness: 51 }]
+    },
+    {
+      featureType: 'transit',
+      elementType: 'all',
+      stylers: [{ saturation: -43 }]
+    },
+    {
+      featureType: 'transit.line',
+      elementType: 'geometry.fill',
+      stylers: [{ color: '#79baec' }]
+    },
+    {
+      featureType: 'water',
+      elementType: 'all',
+      stylers: [{ saturation: -60 }]
+    },
+    {
+      featureType: 'landscape.natural',
+      elementType: 'fill',
+      stylers: [{ hue: '#00ffdd' }]
+    },
+    {
+      featureType: 'poi.park',
+      elementType: 'fill',
+      stylers: [{ hue: '#00ff33' }]
+    }
+  ];
 
-    var map = new google.maps.Map(document.getElementById('map'), {
+  var map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 63.436602, lng: 10.398891},
     styles: styles,
     zoom: 13,
-    mapTypeControl: false
+    mapTypeControl: false,
+    fullscreenControl: false
   });
 
-  var iw = new google.maps.InfoWindow({});
+  // Side panel controls are hidden when the full-size Street View is active, so that they do not cover the SV controls.
+  map.getStreetView().addListener('visible_changed', function() {
+    console.log(map.getStreetView().getVisible());
+    if (map.getStreetView().getVisible()) {
+      $('.panel-opener').css('display', 'none');
+    } else $('.panel-opener').css('display', 'inline-block');
+  });
+
+  var iw = new google.maps.InfoWindow({}); // Only one exists at a time
 
   var getPlaceDetails = function(id) {
     var service = new google.maps.places.PlacesService(map);
@@ -230,5 +239,3 @@ var styles = [
   $('#hide').click(hideConfMarkers);
 
 };
-
-// Open and close side panels
