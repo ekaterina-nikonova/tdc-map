@@ -62,21 +62,23 @@ body {
 }
 
 .panel-opener-left {
-  position: fixed;
-  top: 0;
   left: 8px;
   z-index: 1000;
 }
 
 .panel-opener-right {
-  position: fixed;
-  top: 0;
   right: 20px;
   z-index: 1001;
 }
 
+.panel-opener {
+  position: fixed;
+  top: 0;
+}
+
 #left-panel,
 #right-panel {
+  box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.3);
   height: 100vh;
   position: fixed;
   width: 300px;
@@ -128,8 +130,8 @@ body {
   max-height: 300px;
 }
 
-.iw-photo-comment {
-
+.iw-preloader {
+  margin-top: 130px;
 }
 
 /* Scrollbar (see https://css-tricks.com/examples/WebKitScrollbars/) */

@@ -60,7 +60,6 @@ function initMap() {
 
   // Side panel controls are hidden when the full-size Street View is active, so that they do not cover the SV controls.
   map.getStreetView().addListener('visible_changed', function() {
-    console.log(map.getStreetView().getVisible());
     if (map.getStreetView().getVisible()) {
       $('.panel-opener').css('display', 'none');
     } else $('.panel-opener').css('display', 'inline-block');
@@ -181,19 +180,55 @@ function initMap() {
             $('#iw-panorama').append(
               '<p class=\"iw-photo-comment\">Photo ' +
               (photoNum + 1) + '\/' + photos.length +
-              (photos.length > 1 ? ' - click to view next' : '') +
-              '</p>');
-            // Show the 1st photo and click on it to display the next one.
-            $('#iw-panorama').append('<img class=\"iw-photo\" src=\"' + photos[0].getUrl({maxWidth: 800, maxHeight: 600}) + '\">'); // A larger image can be zoomed in to iinspect details
-            $('.iw-photo').click(function() {
-              // Update the photo and the count. After the last photo, start over.
-              photoNum = photoNum === photos.length - 1 ? 0 : photoNum + 1;
-              $('.iw-photo').attr('src', photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600}));
-              $('.iw-photo-comment').empty();
-              $('.iw-photo-comment').append('Photo ' +
-                (photoNum + 1) + '\/' + photos.length +
-                (photos.length > 1 ? ' - click to view next' : ''));
+              (photos.length > 1 ? ' - click or swipe to view next' : '') +
+              '</p><div class=\"iw-photo-container\"></div>');
+            // Show the 1st photo
+            $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
+            var img = document.createElement('IMG');
+            img.setAttribute('src', photos[0].getUrl({maxWidth: 800, maxHeight: 600})); // A larger image can be zoomed in to iinspect details
+            img.setAttribute('class', 'iw-photo');
+            img.addEventListener('load', function(event)  {
+              $('.iw-photo-container').empty();
+              $('.iw-photo-container').append(img);
             });
+            // $('#iw-panorama').append('<img class=\"iw-photo\" src=\"' + photos[0].getUrl({maxWidth: 800, maxHeight: 600}) + '\">');
+            var nextPhoto = function() {
+              // Update the photo and the count. After the last photo, start over.
+              $('.iw-photo-container').empty();
+              $('.iw-photo-comment').empty();
+              $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
+              photoNum = photoNum === photos.length - 1 ? 0 : photoNum + 1;
+              var img = document.createElement('IMG');
+              img.setAttribute('src', photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600}));
+              img.setAttribute('class', 'iw-photo');
+              img.addEventListener('load', function(event) {
+                $('.iw-photo-container').empty();
+                $('.iw-photo-comment').append('Photo ' +
+                (photoNum + 1) + '\/' + photos.length +
+                (photos.length > 1 ? ' - click or swipe to view next' : ''));
+                $('.iw-photo-container').append(img);
+              });
+            };
+            var prevPhoto = function() {
+              // Update the photo and the count. After the first photo, go to the last one.
+              $('.iw-photo-container').empty();
+              $('.iw-photo-comment').empty();
+              $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
+              photoNum = photoNum === 0 ? photos.length - 1 : photoNum - 1;
+              var img = document.createElement('IMG');
+              img.setAttribute('src', photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600}));
+              img.setAttribute('class', 'iw-photo');
+              img.addEventListener('load', function(event) {
+                $('.iw-photo-container').empty();
+                $('.iw-photo-comment').append('Photo ' +
+                (photoNum + 1) + '\/' + photos.length +
+                (photos.length > 1 ? ' - click or swipe to view next' : ''));
+                $('.iw-photo-container').append(img);
+              });
+            };
+            $('.iw-photo-container').click(nextPhoto);
+            $('.iw-photo-container').on('swipeleft', nextPhoto);
+            $('.iw-photo-container').on('swiperight', prevPhoto);
           }
         } else {
           $('#iw-panorama').append('<p>Couldn\'t find photos.');
