@@ -60,6 +60,8 @@ function ViewModel() {
     }
   ]);
 
+  this.confMarkers = ko.observableArray([]);
+
   // Districts of Trondheim
   this.neighbourhoods = ko.observableArray([
     {name: 'Sentrum'},
@@ -112,4 +114,5 @@ function ViewModel() {
   };
 };
 
-ko.applyBindings(new ViewModel());
+var myViewModel = new ViewModel();
+ko.applyBindings(myViewModel);

@@ -1,5 +1,3 @@
-var confMarkers = [];
-
 function initMap() {
   // Map styles
   var styles = [
@@ -247,30 +245,32 @@ function initMap() {
     return marker;
   };
 
-  // Showing initial markers
+  var hideConfMarkers = function() {
+    myViewModel.confMarkers().forEach(function(marker) {
+      marker.setMap(null);
+    });
+  };
+
+  // Showing initial markers on the map
   var showConfMarkers = function() {
-    confMarkers = [];
-    var confPlaces = new ViewModel().confPlaces();
+    hideConfMarkers(); // Prevents showing more than one marker for one place (try to comment out this line, then update the page, press the "Show places" button several times, and hover over a marker.)
+    myViewModel.confMarkers.removeAll();
     var bounds = new google.maps.LatLngBounds();
-    confPlaces.forEach(function(confPlace) {
+    myViewModel.confPlaces().forEach(function(confPlace) {
       var placeId = {placeId: confPlace.id};
       var marker = makeMarker(confPlace, null);
       marker.setMap(map);
       bounds.extend(marker.position);
-      confMarkers.push(marker);
+      myViewModel.confMarkers().push(marker);
     });
     map.fitBounds(bounds);
   };
 
   showConfMarkers();
 
-  var hideConfMarkers = function() {
-    confMarkers.forEach(function(marker) {
-      marker.setMap(null);
-    });
-  };
-
   $('#show').click(showConfMarkers);
   $('#hide').click(hideConfMarkers);
 
 };
+
+console.log(myViewModel.confMarkers());
