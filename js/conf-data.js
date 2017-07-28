@@ -42,14 +42,6 @@ function ViewModel() {
       place_id: 'ChIJWwkjs5sxbUYRQfhT0Rg143o',
       notes: 'Opens at 7:00'
     },
-    { // Baker'n på torget (Rosenborg bakeri)
-      name: 'Rosenborg bakeri - Rema 1000',
-      types: ['Bakery'],
-      formatted_address: 'Munkegata 22',
-      geometry: {location: {lat: 63.430189, lng: 10.394318}},
-      place_id: 'ChIJpSsF-ZoxbUYRQOG9Ddb_7VE',
-      notes: 'Opens at 7:00'
-    },
     { // Café le Frère
       name: 'Café le Frère',
       types: ['Cafe'],
@@ -57,10 +49,20 @@ function ViewModel() {
       geometry: {location: {lat: 63.4343469, lng: 10.4004243}},
       place_id: 'ChIJ7X0oFJwxbUYR4h2FMXC0cKc',
       notes: 'Coffee bar, opens at 8:00'
+    },
+    { // Baker'n på torget (Rosenborg bakeri)
+      name: 'Rosenborg bakeri - Rema 1000',
+      types: ['Bakery'],
+      formatted_address: 'Munkegata 22',
+      geometry: {location: {lat: 63.430189, lng: 10.394318}},
+      place_id: 'ChIJpSsF-ZoxbUYRQOG9Ddb_7VE',
+      notes: 'Opens at 7:00'
     }
   ]);
 
-  this.confMarkers = ko.observableArray([]);
+  this.markersOnMap = ko.observableArray([]);
+  this.markersOnMapIds = ko.observableArray([]);
+  this.markersOnMapPlaces = ko.observableArray([]);
 
   // Districts of Trondheim
   this.neighbourhoods = ko.observableArray([
@@ -91,6 +93,8 @@ function ViewModel() {
   this.favourites = ko.observableArray([
   ]);
 
+  this.list = ko.observableArray([]);
+
   this.openLeftPanel = function() {
     var panel = $('#left-panel');
     panel.animate({left: '0'});
@@ -111,6 +115,10 @@ function ViewModel() {
     $('#map').click(function() {
       panel.animate({right: '-300px'});
     });
+  };
+
+  this.fillList = function() {
+
   };
 };
 

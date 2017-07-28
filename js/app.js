@@ -82,6 +82,7 @@ function initMap() {
     var type = place.types ? place.types[0].replace('_', ' ') : '';
     var address = place.formatted_address ? place.formatted_address : '';
     var notes = place.notes ? place.notes : '';
+    iw.maxWidth = window.innerWidth;
     iw.setContent (
       '<h1 class=\"iw-place-name\">' + name + '</h1>' +
       '<h2 class=\"iw-place-type\"> &ndash; ' + type + '</h2>' +
@@ -121,7 +122,8 @@ function initMap() {
       title: place.formatted_address,
       animation: google.maps.Animation.DROP,
       icon: icon,
-      pic: 'panorama'
+      pic: 'panorama',
+      place_id: place.place_id // This property links markers and places
     });
 
     // Change appearance on hover
@@ -238,6 +240,7 @@ function initMap() {
       makeInfoWindow(place);
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       iw.open(map, marker);
+      map.addListener('click', function() {iw.close();});
       $('#iw-pano-photos-btn').click(function() {
         marker.pic === 'panorama' ? showPhotos(marker) : showPanorama(panoOptions, marker);
       });
@@ -245,23 +248,32 @@ function initMap() {
     return marker;
   };
 
-  var hideConfMarkers = function() {
-    myViewModel.confMarkers().forEach(function(marker) {
+  var hideAllMarkers = function() {
+    myViewModel.markersOnMap().forEach(function(marker) {
       marker.setMap(null);
     });
+    myViewModel.markersOnMap.removeAll();
+    myViewModel.markersOnMapIds.removeAll();
+    myViewModel.markersOnMapPlaces.removeAll();
   };
 
   // Showing initial markers on the map
   var showConfMarkers = function() {
-    hideConfMarkers(); // Prevents showing more than one marker for one place (try to comment out this line, then update the page, press the "Show places" button several times, and hover over a marker.)
-    myViewModel.confMarkers.removeAll();
+    // hideAllMarkers(); // Prevents showing multiple markers for the same place
     var bounds = new google.maps.LatLngBounds();
+    // If there are no markers to display, the map still covers the senter of Trondheim
+    bounds.extend(myViewModel.confPlaces()[0].geometry.location);
+    bounds.extend(myViewModel.confPlaces()[6].geometry.location);
     myViewModel.confPlaces().forEach(function(confPlace) {
-      var placeId = {placeId: confPlace.id};
+      var placeId = confPlace.place_id;
       var marker = makeMarker(confPlace, null);
-      marker.setMap(map);
-      bounds.extend(marker.position);
-      myViewModel.confMarkers().push(marker);
+      if (!myViewModel.markersOnMapIds().includes(placeId)) {
+        myViewModel.markersOnMap.push(marker);
+        myViewModel.markersOnMapIds.push(placeId);
+        myViewModel.markersOnMapPlaces.push({confPlace});
+        marker.setMap(map);
+        bounds.extend(marker.position);
+      }
     });
     map.fitBounds(bounds);
   };
@@ -269,8 +281,6 @@ function initMap() {
   showConfMarkers();
 
   $('#show').click(showConfMarkers);
-  $('#hide').click(hideConfMarkers);
+  $('#hide').click(hideAllMarkers);
 
 };
-
-console.log(myViewModel.confMarkers());

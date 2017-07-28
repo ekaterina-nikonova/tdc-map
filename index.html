@@ -31,13 +31,12 @@
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
             <h4>On the day of the event</h4>
             <input id="show" type="button" value="Show places">
-            <input id="hide" type="button" value="Hide places">
           </div>
           <!-- "Find places" section -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
-            <h4>Find places</h4>
+            <h4>Filters</h4>
             <input id="place-category" type="text" placeholder="e.g. cafe or hotel">
-            <p>within</p>
+            <p>Search within</p>
             <select id="max-duration">
               <option value="10">10 min</option>
               <option value="15">15 min</option>
@@ -52,7 +51,7 @@
             </select>
             <p>of my location</p>
             <input id="where-am-i" type="button" value="Show my location">
-            <h5>Show only places:</h5>
+            <h5>Only places:</h5>
             <input id="open-now" type="checkbox" value="false">
             <label for="open-now">Open now</label>
             <input id="rated-four-plus" type="checkbox" value="false">
@@ -62,11 +61,23 @@
               <option data-bind="text: name"></option>
             </select>
           </div>
+          <div class="Hide">
+            <input id="hide" type="button" value="Clear the map">
+          </div>
         </div>
       </div>
       <!-- Right side panel with lists of places -->
       <div id="right-panel">
-
+        <div class="panel-header">
+          <h1>What's on the map</h1>
+        </div>
+        <ul id="places-listz" data-role="listview" data-bind="foreach: {data: markersOnMapPlaces, as: 'place'}">
+          <li>
+            <a href="#" data-bind="text: place.confPlace.name"></a>
+            <!-- TODO: Change icon into heart when in favourites -->
+            <a href="#" class="ui-icon-plus ui-btn-icon-right"></a>
+          </li>
+        </ul>
       </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
