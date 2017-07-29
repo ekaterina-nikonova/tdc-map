@@ -123,7 +123,7 @@ function initMap() {
       animation: google.maps.Animation.DROP,
       icon: icon,
       pic: 'panorama',
-      place_id: place.place_id // This property links markers and places
+      placeOnMap: place // For making the list of places linked with markers
     });
 
     // Change appearance on hover
@@ -236,7 +236,7 @@ function initMap() {
       }
     };
 
-    marker.addListener('click', function() {
+    marker.clickOnMarker = function() {
       makeInfoWindow(place);
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       iw.open(map, marker);
@@ -244,7 +244,9 @@ function initMap() {
       $('#iw-pano-photos-btn').click(function() {
         marker.pic === 'panorama' ? showPhotos(marker) : showPanorama(panoOptions, marker);
       });
-    });
+    }
+
+    marker.addListener('click', function() {this.clickOnMarker();});
     return marker;
   };
 

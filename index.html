@@ -71,9 +71,10 @@
         <div class="panel-header">
           <h1>What's on the map</h1>
         </div>
-        <ul id="places-listz" data-role="listview" data-bind="foreach: {data: markersOnMapPlaces, as: 'place'}">
+        <ul id="places-listz" data-role="listview" data-bind="foreach: {data: markersOnMap, as: 'marker'}">
           <li>
-            <a href="#" data-bind="text: place.confPlace.name"></a>
+            <a href="#" data-bind="
+              text: marker.placeOnMap.name, event: {mouseover: function() {marker.setAnimation(google.maps.Animation.BOUNCE);}, mouseout: function() {marker.setAnimation(null);}, click: function() {marker.clickOnMarker();}}"></a>
             <!-- TODO: Change icon into heart when in favourites -->
             <a href="#" class="ui-icon-plus ui-btn-icon-right"></a>
           </li>
