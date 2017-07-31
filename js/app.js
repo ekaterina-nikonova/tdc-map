@@ -1,3 +1,5 @@
+var map; // Has to be global to be used in ViewModel
+
 function initMap() {
   // Map styles
   var styles = [
@@ -48,7 +50,7 @@ function initMap() {
     }
   ];
 
-  var map = new google.maps.Map(document.getElementById('map'), {
+    map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 63.436602, lng: 10.398891},
     styles: styles,
     zoom: 13,
@@ -169,12 +171,12 @@ function initMap() {
       $('#iw-pano-photos-btn').attr('value', 'Show panorama');
       marker.pic = 'photos';
       var service = new google.maps.places.PlacesService(map);
-      service.getDetails({placeId: place.place_id}, callback);
-      function callback(place, status) {
+      service.getDetails({placeId: place.place_id}, getPhotos);
+      function getPhotos(place, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
           var photos = place.photos;
           if (!photos) {
-            $('#iw-panorama').append('<p>Couldn\'t find photos.');
+            $('#iw-panorama').append('<p>Couldn\'t find photos.</p>');
           } else {
             var photoNum = 0;
             $('#iw-panorama').append(
@@ -185,13 +187,12 @@ function initMap() {
             // Show the 1st photo
             $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
             var img = document.createElement('IMG');
-            img.setAttribute('src', photos[0].getUrl({maxWidth: 800, maxHeight: 600})); // A larger image can be zoomed in to iinspect details
+            img.setAttribute('src', photos[0].getUrl({maxWidth: 800, maxHeight: 600})); // A larger image can be zoomed in to inspect details
             img.setAttribute('class', 'iw-photo');
             img.addEventListener('load', function(event)  {
               $('.iw-photo-container').empty();
               $('.iw-photo-container').append(img);
             });
-            // $('#iw-panorama').append('<img class=\"iw-photo\" src=\"' + photos[0].getUrl({maxWidth: 800, maxHeight: 600}) + '\">');
             var nextPhoto = function() {
               // Update the photo and the count. After the last photo, start over.
               $('.iw-photo-container').empty();
@@ -250,7 +251,19 @@ function initMap() {
     return marker;
   };
 
-  var hideAllMarkers = function() {
+  // Find more places
+  $('#find-more-places').click(function() {
+    var placeInput = document.getElementById('find-more-places');
+    var searchBox = new google.maps.places.SearchBox(placeInput);
+    searchBox.setBounds(map.getBounds());
+    searchBox.addListener('places_changed', function() {
+      clearMap();
+      var places = searchBox.getPlaces();
+      showMarkers(places);
+    });
+  });
+
+  var clearMap = function() {
     myViewModel.markersOnMap().forEach(function(marker) {
       marker.setMap(null);
     });
@@ -260,19 +273,18 @@ function initMap() {
   };
 
   // Showing initial markers on the map
-  var showConfMarkers = function() {
-    // hideAllMarkers(); // Prevents showing multiple markers for the same place
+  var showMarkers = function(places) {
     var bounds = new google.maps.LatLngBounds();
     // If there are no markers to display, the map still covers the senter of Trondheim
     bounds.extend(myViewModel.confPlaces()[0].geometry.location);
     bounds.extend(myViewModel.confPlaces()[6].geometry.location);
-    myViewModel.confPlaces().forEach(function(confPlace) {
-      var placeId = confPlace.place_id;
-      var marker = makeMarker(confPlace, null);
+    places.forEach(function(place) {
+      var placeId = place.place_id;
+      var marker = makeMarker(place, null);
       if (!myViewModel.markersOnMapIds().includes(placeId)) {
         myViewModel.markersOnMap.push(marker);
         myViewModel.markersOnMapIds.push(placeId);
-        myViewModel.markersOnMapPlaces.push({confPlace});
+        myViewModel.markersOnMapPlaces.push({place});
         marker.setMap(map);
         bounds.extend(marker.position);
       }
@@ -280,9 +292,11 @@ function initMap() {
     map.fitBounds(bounds);
   };
 
-  showConfMarkers();
+  showMarkers(myViewModel.confPlaces());
 
-  $('#show').click(showConfMarkers);
-  $('#hide').click(hideAllMarkers);
+  $('#show').click(function() {
+    showMarkers(myViewModel.confPlaces());
+  });
+  $('#hide').click(clearMap);
 
 };

@@ -106,6 +106,16 @@ body {
 #right-panel {
   right: -300px;
   z-index: 2001;
+  /* Changing direction allows to display the scrollbar on the left side of the right panel for symmetry. In the .panel-box this property is reset. */
+  direction: rtl;
+}
+
+.panel-box {
+  direction: ltr;
+}
+
+.pac-container {
+  z-index: 4000;
 }
 
 .coa {
@@ -116,12 +126,7 @@ body {
 }
 
 #places-list {
-  padding: 0;
-}
-
-.places-list-btn {
-  margin: 0;
-  text-align: left;
+  margin-top: 5px;
 }
 
 .fav-btn {
@@ -139,13 +144,15 @@ body {
 #iw-panorama {
   width: 70vw;
   height: 60vh;
+  /* Despite the maxWidth of info window being set at 100vw, it seems to be limited at 700+ px, so we have to limit the width of panorama and photos to prevent horizontal scrolling */
+  max-width: 600px;
   text-align: center;
   background-color: white !important;
 }
 
 .iw-photo {
   margin: auto;
-  max-width: 70vw;
+  max-width: 600px;
   max-height: 60vh;
 }
 

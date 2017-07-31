@@ -1,4 +1,5 @@
 function ViewModel() {
+  var self = this;
   // Places for the initial array of markers
   this.confPlaces = ko.observableArray([
     { // Clarion Hotel & Congress
@@ -117,10 +118,26 @@ function ViewModel() {
     });
   };
 
-  this.fillList = function() {
+  this.snippet = ko.observable();
 
+  this.test = function() {
+    console.log();
+  };
+
+  this.leaveIfContains = function() {
+    this.markersOnMap().forEach(function(marker) {
+      if (!marker.placeOnMap.name.toLowerCase().includes(self.snippet().toLowerCase())) {
+        marker.setMap(null);
+      } else {
+        marker.setMap(map);
+      }
+    });
   };
 };
 
 var myViewModel = new ViewModel();
 ko.applyBindings(myViewModel);
+
+myViewModel.snippet.subscribe(function() {
+  myViewModel.leaveIfContains();
+});
