@@ -1,5 +1,4 @@
 var map; // Has to be global to be used in ViewModel
-var myPosition;
 var morePlaces = false;
 function initMap() {
   // Map styles
@@ -68,18 +67,6 @@ function initMap() {
 
   var iw = new google.maps.InfoWindow({}); // Only one exists at a time
 
-  // var myPosition;
-
-    if (navigator.geolocation) {
-      // navigator.geolocation.getCurrentPosition(function(position) {
-      //   myPosition = position;
-      // });
-    } else {
-      // If geolocation isn't supported, the position of the sentral station is used as a default location and the user is alerted
-      myPosition = myViewModel.confPlaces()[1].geometry.location;
-      alert('Geolocation is not supported.');
-    }
-
   // TODO: Remove if not used
   var getPlaceDetails = function(id) {
     var service = new google.maps.places.PlacesService(map);
@@ -95,7 +82,7 @@ function initMap() {
 
   var makeInfoWindow = function(place) {
     var name = place.name ? place.name : '';
-    var type = place.types ? place.types[0].replace('_', ' ') : '';
+    var type = place.types ? place.types[0].replace(/_/g, ' ') : '';
     var address = place.formatted_address ? place.formatted_address : '';
     var notes = place.notes ? place.notes : '';
     iw.maxWidth = window.innerWidth;
@@ -109,8 +96,9 @@ function initMap() {
       '<input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">');
   };
 
-  var makeMarker = function(place, icon) {
-    if (!icon) {
+  var makeMarker = function(place) {
+    var icon = place.icon;
+    if (!place.icon) {
       switch (place.types[0].toLowerCase()) {
         case 'venue':
           icon = 'img/meet.png';
@@ -312,17 +300,17 @@ function initMap() {
 
   // Find more places
   var mapBounds;
-  // The user will have to repeat search every time the map is zoomed or panned. The way Search Box handles bounds seems to be too unpredictable to implement automatic search.
+  // The user will have to repeat search every time the map is zoomed or panned. The way Search Box handles bounds is too unpredictable for automatic search.
   map.addListener('bounds_changed', function() {
     mapBounds = map.getBounds();
-    if (morePlaces) findMorePlaces();
+    // if (morePlaces) findMorePlaces();
   });
   var findMorePlaces = function() {
     clearMap();
     morePlaces = true;
     searchBox.setBounds(mapBounds);
     var places = searchBox.getPlaces();
-    var filteredPlaces = []; // No places outside bounds will be shown
+    var filteredPlaces = []; // No places outside bounds should be displayed
     places.forEach(function(place) {
       if (mapBounds.contains(place.geometry.location)) {
         filteredPlaces.push(place);
@@ -337,5 +325,41 @@ function initMap() {
     searchBox.setBounds(mapBounds);
   });
   searchBox.addListener('places_changed', findMorePlaces);
+
+  // My position: 'Show my location' button and directions
+  var myPosition;
+  $('#where-am-i').click(function() {
+    // detectMyPosition();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        myPosition = position;
+        var myLocation = {
+          lat: myPosition.coords.latitude,
+          lng: myPosition.coords.longitude
+        };
+        console.log(myLocation);
+        var myPlace = [{
+          name: 'My position',
+          types: ['i_am_here'],
+          geometry: {location: myLocation},
+          icon: 'img/my-position.png'
+        }];
+        var geocoder = new google.maps.Geocoder;
+        geocoder.geocode({location: myLocation}, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            if (results[0]) {
+              myPlace.formatted_address = results[0].formatted_address;
+            }
+          } else myPlace.formatted_address = 'No address found.';
+        });
+        console.log(myPlace);
+        showMarkers(myPlace);
+      });
+    } else {
+      // If geolocation isn't supported, the position of the sentral station is used as a default location and the user is alerted
+      myPosition = myViewModel.confPlaces()[1].geometry.location;
+      alert('Geolocation is not supported.');
+    }
+  });
 
 };
