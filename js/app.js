@@ -1,5 +1,6 @@
 var map; // Has to be global to be used in ViewModel
-
+var myPosition;
+var morePlaces = false;
 function initMap() {
   // Map styles
   var styles = [
@@ -50,7 +51,7 @@ function initMap() {
     }
   ];
 
-    map = new google.maps.Map(document.getElementById('map'), {
+  map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 63.436602, lng: 10.398891},
     styles: styles,
     zoom: 13,
@@ -67,6 +68,19 @@ function initMap() {
 
   var iw = new google.maps.InfoWindow({}); // Only one exists at a time
 
+  // var myPosition;
+
+    if (navigator.geolocation) {
+      // navigator.geolocation.getCurrentPosition(function(position) {
+      //   myPosition = position;
+      // });
+    } else {
+      // If geolocation isn't supported, the position of the sentral station is used as a default location and the user is alerted
+      myPosition = myViewModel.confPlaces()[1].geometry.location;
+      alert('Geolocation is not supported.');
+    }
+
+  // TODO: Remove if not used
   var getPlaceDetails = function(id) {
     var service = new google.maps.places.PlacesService(map);
     var place = service.getDetails({placeId: id}, function(place, status) {
@@ -89,7 +103,7 @@ function initMap() {
       '<h1 class=\"iw-place-name\">' + name + '</h1>' +
       '<h2 class=\"iw-place-type\"> &ndash; ' + type + '</h2>' +
       '<div class=\"iw-place-address\">' + address + '</div>' +
-      '<input id=\"iw-pano-photos-btn\" type=\"button\">' +
+      '<input id=\"iw-pano-photos-btn\" type=\"button\" value=\"Show photos\">' +
       '<div id=\"iw-panorama\"></div>' +
       '<div id=\"iw-notes\">' + notes + '</div>' +
       '<input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">');
@@ -125,8 +139,9 @@ function initMap() {
       animation: google.maps.Animation.DROP,
       icon: icon,
       pic: 'panorama',
-      placeOnMap: place // For making the list of places linked with markers
+      placeOnMap: place // For linking the list of places to markers
     });
+    marker.onMap = ko.observable(); // For showing/hiding on the list
 
     // Change appearance on hover
     marker.addListener('mouseover', function() {
@@ -153,7 +168,7 @@ function initMap() {
           }
         };
         showPanorama(panoOptions, marker);
-      } else document.getElementById('iw-panorama').appendChild(document.createTextNode('Couldn\'t display a panorama.'));
+      } else document.getElementById('iw-panorama').appendChild(document.createTextNode('Cannot show panorama.'));
     };
 
     var showPanorama = function(panoOptions, marker) {
@@ -176,7 +191,7 @@ function initMap() {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
           var photos = place.photos;
           if (!photos) {
-            $('#iw-panorama').append('<p>Couldn\'t find photos.</p>');
+            $('#iw-panorama').append('<p>No photos found.</p>');
           } else {
             var photoNum = 0;
             $('#iw-panorama').append(
@@ -232,7 +247,7 @@ function initMap() {
             $('.iw-photo-container').on('swiperight', prevPhoto);
           }
         } else {
-          $('#iw-panorama').append('<p>Couldn\'t find photos.');
+          $('#iw-panorama').append('<p>Couldn\'t find photos.</p>');
         }
       }
     };
@@ -251,33 +266,25 @@ function initMap() {
     return marker;
   };
 
-  // Find more places
-  $('#find-more-places').click(function() {
-    var placeInput = document.getElementById('find-more-places');
-    var searchBox = new google.maps.places.SearchBox(placeInput);
-    searchBox.setBounds(map.getBounds());
-    searchBox.addListener('places_changed', function() {
-      clearMap();
-      var places = searchBox.getPlaces();
-      showMarkers(places);
-    });
-  });
-
   var clearMap = function() {
     myViewModel.markersOnMap().forEach(function(marker) {
       marker.setMap(null);
+      marker.onMap(false);
     });
     myViewModel.markersOnMap.removeAll();
     myViewModel.markersOnMapIds.removeAll();
     myViewModel.markersOnMapPlaces.removeAll();
+    morePlaces = false;
   };
 
   // Showing initial markers on the map
   var showMarkers = function(places) {
     var bounds = new google.maps.LatLngBounds();
     // If there are no markers to display, the map still covers the senter of Trondheim
-    bounds.extend(myViewModel.confPlaces()[0].geometry.location);
-    bounds.extend(myViewModel.confPlaces()[6].geometry.location);
+    if (places.length === 0) {
+      bounds.extend(myViewModel.confPlaces()[0].geometry.location);
+      bounds.extend(myViewModel.confPlaces()[6].geometry.location);
+    }
     places.forEach(function(place) {
       var placeId = place.place_id;
       var marker = makeMarker(place, null);
@@ -286,10 +293,14 @@ function initMap() {
         myViewModel.markersOnMapIds.push(placeId);
         myViewModel.markersOnMapPlaces.push({place});
         marker.setMap(map);
+        marker.onMap(true);
         bounds.extend(marker.position);
       }
     });
     map.fitBounds(bounds);
+    if (places.length === 1) {
+      map.setZoom(15);
+    }
   };
 
   showMarkers(myViewModel.confPlaces());
@@ -298,5 +309,33 @@ function initMap() {
     showMarkers(myViewModel.confPlaces());
   });
   $('#hide').click(clearMap);
+
+  // Find more places
+  var mapBounds;
+  // The user will have to repeat search every time the map is zoomed or panned. The way Search Box handles bounds seems to be too unpredictable to implement automatic search.
+  map.addListener('bounds_changed', function() {
+    mapBounds = map.getBounds();
+    if (morePlaces) findMorePlaces();
+  });
+  var findMorePlaces = function() {
+    clearMap();
+    morePlaces = true;
+    searchBox.setBounds(mapBounds);
+    var places = searchBox.getPlaces();
+    var filteredPlaces = []; // No places outside bounds will be shown
+    places.forEach(function(place) {
+      if (mapBounds.contains(place.geometry.location)) {
+        filteredPlaces.push(place);
+      }
+    });
+    showMarkers(filteredPlaces);
+  };
+  var placeInput = document.getElementById('find-more-places');
+  var searchBox = new google.maps.places.SearchBox(placeInput);
+  $('#find-more-places').click(function() {
+    mapBounds = map.getBounds();
+    searchBox.setBounds(mapBounds);
+  });
+  searchBox.addListener('places_changed', findMorePlaces);
 
 };

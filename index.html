@@ -32,7 +32,7 @@
             <h4>Show places</h4>
             <input id="show" type="button" value="Day of the event">
             <label for="find-more-places">Find more places</label>
-            <input id="find-more-places" type="text" placeholder="e.g. cafe or hotel">
+            <input id="find-more-places" type="search" placeholder="e.g. cafe or hotel">
           </div>
           <!-- Filters -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
@@ -83,7 +83,7 @@
           </div>
           <!-- List of markers on the map -->
           <ul id="places-list" data-role="listview" data-bind="foreach: {data: markersOnMap, as: 'marker'}">
-            <li>
+            <li data-bind="if: marker.onMap()">
               <a href="#" data-bind="
                 text: marker.placeOnMap.name,
                 event: {

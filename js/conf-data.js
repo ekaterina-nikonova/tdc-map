@@ -11,7 +11,7 @@ function ViewModel() {
       notes: 'The Conference venue: Monday 30 October at 9:00–18:00'
     },
     { // Central station
-      name: 'Trondheim S',
+      name: 'Trondheim Sentralstasjon',
       types: ['train_station'],
       formatted_address: 'Fosenkaia 1, 7010 Trondheim',
       geometry: {location: {lat: 63.43669999999999, lng: 10.3988199}},
@@ -118,18 +118,21 @@ function ViewModel() {
     });
   };
 
-  this.snippet = ko.observable();
+  this.snippet = ko.observable(); // Input field in the right panel
 
   this.test = function() {
     console.log();
   };
 
+  // Filter the list
   this.leaveIfContains = function() {
     this.markersOnMap().forEach(function(marker) {
       if (!marker.placeOnMap.name.toLowerCase().includes(self.snippet().toLowerCase())) {
         marker.setMap(null);
+        marker.onMap(false);
       } else {
         marker.setMap(map);
+        marker.onMap(true);
       }
     });
   };
