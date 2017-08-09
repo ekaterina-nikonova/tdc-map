@@ -51,13 +51,13 @@ function ViewModel() {
       place_id: 'ChIJ7X0oFJwxbUYR4h2FMXC0cKc',
       notes: 'Coffee bar, opens at 8:00'
     },
-    { // Baker'n på torget (Rosenborg bakeri)
-      name: 'Rosenborg bakeri - Rema 1000',
-      types: ['Bakery'],
-      formatted_address: 'Munkegata 22',
-      geometry: {location: {lat: 63.430189, lng: 10.394318}},
-      place_id: 'ChIJpSsF-ZoxbUYRQOG9Ddb_7VE',
-      notes: 'Opens at 7:00'
+    { // Big Bite
+      name: 'Big Bite',
+      types: ['Restaurant'],
+      formatted_address: 'Nordre gate 11',
+      geometry: {location: {lat: 63.432715, lng: 10.397460}},
+      place_id: 'ChIJXemij5sxbUYRxhSYKU_x5OE',
+      notes: 'Opens at 7:30'
     }
   ]);
 
