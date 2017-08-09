@@ -340,8 +340,26 @@ function initMap() {
     markerCurrentPlace = new google.maps.Marker();
   $('#my-location-show').click(function() {
     markerCurrentPlace.setMap(null);
+    function geocoderError(error) {
+      var errorText;
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          errorText = 'Access denied.';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          errorText = 'Location info unavailable.';
+          break;
+        case error.TIMEOUT:
+          errorText = 'Request timed out.';
+          break;
+        default:
+          errorText = 'Unknown error.';
+      }
+      alert(errorText);
+    }
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
+        console.log(position);
         myPosition = position;
         var myLocation = {
           lat: myPosition.coords.latitude,
@@ -374,7 +392,7 @@ function initMap() {
           markerCurrentPlace.setMap(null);
           $('#my-location-hide').addClass('ui-state-disabled');
         })
-      });
+      }, geocoderError);
     } else {
       // If geolocation isn't supported, the position of the sentral station is used as a default location and the user is alerted
       myPosition = myViewModel.confPlaces()[1].geometry.location;
