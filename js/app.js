@@ -1,5 +1,12 @@
+// Turn Show/Hide buttons into a group, the Hide button is disabled
+$('#my-location-group').controlgroup({
+  type: 'horizontal'
+});
+$('#my-location-hide').addClass('ui-state-disabled');
+
 var map; // Has to be global to be used in ViewModel
-var morePlaces = false;
+var morePlaces = false; // A token for repeating search when boundaries change. The feature is currently commented out.
+
 function initMap() {
   // Map styles
   var styles = [
@@ -97,8 +104,8 @@ function initMap() {
   };
 
   var makeMarker = function(place) {
-    var icon = place.icon;
-    if (!place.icon) {
+    var icon = place.custom_icon;
+    if (!place.custom_icon) {
       switch (place.types[0].toLowerCase()) {
         case 'venue':
           icon = 'img/meet.png';
@@ -162,7 +169,7 @@ function initMap() {
     var showPanorama = function(panoOptions, marker) {
       $('#iw-panorama').empty();
       $('#iw-pano-photos-btn').attr('value', 'Show photos');
-      marker.pic = 'panorama';
+      marker.pic = 'panorama'; // Toggle panorama/photos indicator
       var panorama = new google.maps.StreetViewPanorama(
         document.getElementById('iw-panorama'), panoOptions
       );
@@ -172,7 +179,7 @@ function initMap() {
     var showPhotos = function(marker) {
       $('#iw-panorama').empty();
       $('#iw-pano-photos-btn').attr('value', 'Show panorama');
-      marker.pic = 'photos';
+      marker.pic = 'photos'; // Toggle panorama/photos indicator
       var service = new google.maps.places.PlacesService(map);
       service.getDetails({placeId: place.place_id}, getPhotos);
       function getPhotos(place, status) {
@@ -275,7 +282,8 @@ function initMap() {
     }
     places.forEach(function(place) {
       var placeId = place.place_id;
-      var marker = makeMarker(place, null);
+      var marker = makeMarker(place);
+      // All markers should be unique. The markersOnMapIds array tracks that.
       if (!myViewModel.markersOnMapIds().includes(placeId)) {
         myViewModel.markersOnMap.push(marker);
         myViewModel.markersOnMapIds.push(placeId);
@@ -296,7 +304,7 @@ function initMap() {
   $('#show').click(function() {
     showMarkers(myViewModel.confPlaces());
   });
-  $('#hide').click(clearMap);
+  $('#clear-map-btn').click(clearMap);
 
   // Find more places
   var mapBounds;
@@ -327,9 +335,11 @@ function initMap() {
   searchBox.addListener('places_changed', findMorePlaces);
 
   // My position: 'Show my location' button and directions
-  var myPosition;
-  $('#where-am-i').click(function() {
-    // detectMyPosition();
+  var myPosition,
+    currentPlace,
+    markerCurrentPlace = new google.maps.Marker();
+  $('#my-location-show').click(function() {
+    markerCurrentPlace.setMap(null);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         myPosition = position;
@@ -337,23 +347,33 @@ function initMap() {
           lat: myPosition.coords.latitude,
           lng: myPosition.coords.longitude
         };
-        console.log(myLocation);
-        var myPlace = [{
+        currentPlace = {
           name: 'My position',
-          types: ['i_am_here'],
+          types: ['i_am_here_now'],
           geometry: {location: myLocation},
-          icon: 'img/my-position.png'
-        }];
+          custom_icon: 'img/my-position.png',
+          place_id: '',
+          formatted_address: ''
+        };
         var geocoder = new google.maps.Geocoder;
         geocoder.geocode({location: myLocation}, function(results, status) {
           if (status === google.maps.GeocoderStatus.OK) {
             if (results[0]) {
-              myPlace.formatted_address = results[0].formatted_address;
+              currentPlace.formatted_address = results[0].formatted_address;
+              currentPlace.place_id = results[0].place_id;
             }
-          } else myPlace.formatted_address = 'No address found.';
+          } else currentPlace[0].formatted_address = 'No address found.';
         });
-        console.log(myPlace);
-        showMarkers(myPlace);
+        // The marker is displayed separately, it's not in the list and clearMap() does not affect it.
+        markerCurrentPlace = makeMarker(currentPlace);
+        markerCurrentPlace.setMap(map);
+        map.setCenter(markerCurrentPlace.getPosition());
+        map.setZoom(15);
+        $('#my-location-hide').removeClass('ui-state-disabled');
+        $('#my-location-hide').click(function() {
+          markerCurrentPlace.setMap(null);
+          $('#my-location-hide').addClass('ui-state-disabled');
+        })
       });
     } else {
       // If geolocation isn't supported, the position of the sentral station is used as a default location and the user is alerted
@@ -361,5 +381,4 @@ function initMap() {
       alert('Geolocation is not supported.');
     }
   });
-
 };

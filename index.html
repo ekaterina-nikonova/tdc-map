@@ -51,7 +51,15 @@
               <option value="TRANSIT">transit ride</option>
             </select>
             <label for="mode">of my location</label>
-            <input id="where-am-i" type="button" value="Show my location">
+            <hr>
+            <fieldset>
+              <legend>My location:</legend>
+              <div id="my-location-group">
+                <a href="#" class="ui-btn my-location-btn" id="my-location-show">Show</a>
+                <a href="#" class="ui-btn my-location-btn" id="my-location-hide">Hide</a>
+              </div>
+            </fieldset>
+            <hr>
             <label for="filter-only">Only places:</label>
             <div id="filter-only" class="ui-field-contain">
               <input id="open-now" type="checkbox" value="false">
@@ -64,8 +72,8 @@
               </select>
             </div>
           </div>
-          <div class="Hide">
-            <input id="hide" type="button" value="Clear the map">
+          <div class="clear-map">
+            <input id="<clear-map-btn></clear-map-btn>" type="button" value="Clear the map">
           </div>
         </div>
       </div>

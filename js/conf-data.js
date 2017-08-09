@@ -67,28 +67,28 @@ function ViewModel() {
 
   // Districts of Trondheim
   this.neighbourhoods = ko.observableArray([
-    {name: 'Sentrum'},
-    {name: 'Tyholt'},
-    {name: 'Byåsen'},
-    {name: 'Trolla'},
-    {name: 'Ila'},
-    {name: 'Møllenberg'},
-    {name: 'Nedre Elvehavn'},
-    {name: 'Lade'},
-    {name: 'Strindheim'},
-    {name: 'Jakobsli'},
-    {name: 'Vikåsen'},
-    {name: 'Ranheim'},
-    {name: 'Lerkendal'},
-    {name: 'Nardo'},
-    {name: 'Flatåsen'},
-    {name: 'Moholt'},
-    {name: 'Heimdal'},
     {name: 'Byneset'},
-    {name: 'Tiller'},
+    {name: 'Byåsen'},
+    {name: 'Flatåsen'},
+    {name: 'Heimdal'},
+    {name: 'Ila'},
+    {name: 'Jakobsli'},
+    {name: 'Kattem'},
     {name: 'Kolstad'},
+    {name: 'Lade'},
+    {name: 'Lerkendal'},
+    {name: 'Moholt'},
+    {name: 'Møllenberg'},
+    {name: 'Nardo'},
+    {name: 'Nedre Elvehavn'},
+    {name: 'Ranheim'},
     {name: 'Saupstad'},
-    {name: 'Kattem'}
+    {name: 'Sentrum'},
+    {name: 'Strindheim'},
+    {name: 'Tiller'},
+    {name: 'Trolla'},
+    {name: 'Tyholt'},
+    {name: 'Vikåsen'}
   ]);
 
   this.favourites = ko.observableArray([

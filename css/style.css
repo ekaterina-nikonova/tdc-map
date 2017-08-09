@@ -129,10 +129,19 @@ body {
   margin-top: 5px;
 }
 
-.fav-btn {
-  color: #777;
-  float: right;
-  font-size: 18px;
+/* Show/Hide my location */
+
+.ui-controlgroup-controls {
+  width: 100%;
+}
+
+#my-location-hide,
+#my-location-show {
+  width: 50%;
+}
+
+#filter-only {
+  margin-top: 0;
 }
 
 /* Info Window elements */
