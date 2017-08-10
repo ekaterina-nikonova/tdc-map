@@ -181,10 +181,12 @@ function initMap() {
       $('#iw-pano-photos-btn').attr('value', 'Show panorama');
       marker.pic = 'photos'; // Toggle panorama/photos indicator
 
-      function displayPhoto(photoNum, photos) {
+      function displayPhoto(place, photoNum, photos) {
         $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
         var img = document.createElement('IMG');
         var imgUrl = photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600});
+        var placeUrl = place.url;
+        console.log(placeUrl);
         img.setAttribute('src', imgUrl);
         img.setAttribute('class', 'iw-photo');
         img.addEventListener('load', function(event) {
@@ -194,9 +196,15 @@ function initMap() {
           (photos.length > 1 ? ' - click or swipe to view next' : '' +
           '</p>'));
           $('.iw-photo-container').append(img);
-          console.log(img);
           // Facebook Share button
-          $('.iw-photo-comment').append('<a id=\"facebook-share-btn\" href=\"' + imgUrl + '\">Share</a>');
+          $('.iw-photo-comment').append(
+            '<div class=\"fb-share-btn\"><a href=\"#\">Share</a></div>');
+          $('.fb-share-btn').click(function() {
+            FB.ui({
+              method: 'share',
+              href: placeUrl,
+            }, function(response){console.log(response);});
+          });
         });
       }
 
@@ -210,21 +218,21 @@ function initMap() {
           } else {
             // Display the 1st photo
             var photoNum = 0;
-            displayPhoto(photoNum, photos);
+            displayPhoto(place, photoNum, photos);
             $('#iw-panorama').append('<div class=\"iw-photo-comment\"></div>' + '<div class=\"iw-photo-container\"></div>');
             var nextPhoto = function() {
               // Update the photo and the count. After the last photo, start over.
               $('.iw-photo-container').empty();
               $('.iw-photo-comment').empty();
               photoNum = photoNum === photos.length - 1 ? 0 : photoNum + 1;
-              displayPhoto(photoNum, photos);
+              displayPhoto(place, photoNum, photos);
             };
             var prevPhoto = function() {
               // Update the photo and the count. After the first photo, go to the last one.
               $('.iw-photo-container').empty();
               $('.iw-photo-comment').empty();
               photoNum = photoNum === 0 ? photos.length - 1 : photoNum - 1;
-              displayPhoto(photoNum, photos);
+              displayPhoto(place, photoNum, photos);
             };
             $('.iw-photo-container').click(nextPhoto);
             $('.iw-photo-container').on('swipeleft', nextPhoto);

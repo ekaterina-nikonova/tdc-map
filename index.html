@@ -11,25 +11,25 @@
   </head>
   <body>
     <!-- Load and initialize Facebook SDK -->
-    <script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId            : '370042566748564',
-      autoLogAppEvents : true,
-      xfbml            : true,
-      version          : 'v2.10'
-    });
-    FB.AppEvents.logPageView();
-  };
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId            : '370042566748564',
+        autoLogAppEvents : true,
+        xfbml            : true,
+        version          : 'v2.10'
+      });
+      FB.AppEvents.logPageView();
+    };
 
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "https://connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
 
     <div data-role="page">
       <!-- The map with a menu button overlay -->
@@ -51,7 +51,7 @@
           <!-- "Date of the event" section -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
             <h4>Show places</h4>
-            <input id="show" type="button" value="Day of the event">
+            <input id="show" typ<h4>Show places</h4>e="button" value="Day of the event">
             <label for="find-more-places">Find more places</label>
             <input id="find-more-places" type="search" placeholder="e.g. cafe or hotel">
           </div>
@@ -92,6 +92,10 @@
                 <option data-bind="text: name"></option>
               </select>
             </div>
+          </div>
+          <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
+            <h4>About</h4>
+            <div class="fb-like" data-share="true" data-width="450" data-show-faces="true"></div>
           </div>
           <div class="clear-map">
             <input id="clear-map-btn" type="button" value="Clear the map">
