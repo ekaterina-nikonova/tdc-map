@@ -10,6 +10,27 @@
     <link rel="shortcut icon" href="img/trondheim-coa.png">
   </head>
   <body>
+    <!-- Load and initialize Facebook SDK -->
+    <script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId            : '370042566748564',
+      autoLogAppEvents : true,
+      xfbml            : true,
+      version          : 'v2.10'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
     <div data-role="page">
       <!-- The map with a menu button overlay -->
       <div id="map" class="ui-content" data-role="main"></div>
@@ -73,7 +94,7 @@
             </div>
           </div>
           <div class="clear-map">
-            <input id="<clear-map-btn></clear-map-btn>" type="button" value="Clear the map">
+            <input id="clear-map-btn" type="button" value="Clear the map">
           </div>
         </div>
       </div>

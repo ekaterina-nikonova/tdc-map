@@ -36,8 +36,12 @@
     * Kattem
 * Info window:
  - panorama
- - panorama replaced by place photos
+ - panorama replaced with place photos
  - show directions
+
+* Third-side API
+ - share on Facebook
+ - login with Google (for Firebase :question:)
 
 # Acknowledgements
 * The map style is based on the [Muted Blue theme by Jon Edmiston](https://snazzymaps.com/style/83/muted-blue).

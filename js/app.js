@@ -180,6 +180,26 @@ function initMap() {
       $('#iw-panorama').empty();
       $('#iw-pano-photos-btn').attr('value', 'Show panorama');
       marker.pic = 'photos'; // Toggle panorama/photos indicator
+
+      function displayPhoto(photoNum, photos) {
+        $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
+        var img = document.createElement('IMG');
+        var imgUrl = photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600});
+        img.setAttribute('src', imgUrl);
+        img.setAttribute('class', 'iw-photo');
+        img.addEventListener('load', function(event) {
+          $('.iw-photo-container').empty();
+          $('.iw-photo-comment').append('<p>Photo ' +
+          (photoNum + 1) + '\/' + photos.length +
+          (photos.length > 1 ? ' - click or swipe to view next' : '' +
+          '</p>'));
+          $('.iw-photo-container').append(img);
+          console.log(img);
+          // Facebook Share button
+          $('.iw-photo-comment').append('<a id=\"facebook-share-btn\" href=\"' + imgUrl + '\">Share</a>');
+        });
+      }
+
       var service = new google.maps.places.PlacesService(map);
       service.getDetails({placeId: place.place_id}, getPhotos);
       function getPhotos(place, status) {
@@ -188,54 +208,23 @@ function initMap() {
           if (!photos) {
             $('#iw-panorama').append('<p>No photos found.</p>');
           } else {
+            // Display the 1st photo
             var photoNum = 0;
-            $('#iw-panorama').append(
-              '<p class=\"iw-photo-comment\">Photo ' +
-              (photoNum + 1) + '\/' + photos.length +
-              (photos.length > 1 ? ' - click or swipe to view next' : '') +
-              '</p><div class=\"iw-photo-container\"></div>');
-            // Show the 1st photo
-            $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
-            var img = document.createElement('IMG');
-            img.setAttribute('src', photos[0].getUrl({maxWidth: 800, maxHeight: 600})); // A larger image can be zoomed in to inspect details
-            img.setAttribute('class', 'iw-photo');
-            img.addEventListener('load', function(event)  {
-              $('.iw-photo-container').empty();
-              $('.iw-photo-container').append(img);
-            });
+            displayPhoto(photoNum, photos);
+            $('#iw-panorama').append('<div class=\"iw-photo-comment\"></div>' + '<div class=\"iw-photo-container\"></div>');
             var nextPhoto = function() {
               // Update the photo and the count. After the last photo, start over.
               $('.iw-photo-container').empty();
               $('.iw-photo-comment').empty();
-              $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
               photoNum = photoNum === photos.length - 1 ? 0 : photoNum + 1;
-              var img = document.createElement('IMG');
-              img.setAttribute('src', photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600}));
-              img.setAttribute('class', 'iw-photo');
-              img.addEventListener('load', function(event) {
-                $('.iw-photo-container').empty();
-                $('.iw-photo-comment').append('Photo ' +
-                (photoNum + 1) + '\/' + photos.length +
-                (photos.length > 1 ? ' - click or swipe to view next' : ''));
-                $('.iw-photo-container').append(img);
-              });
+              displayPhoto(photoNum, photos);
             };
             var prevPhoto = function() {
               // Update the photo and the count. After the first photo, go to the last one.
               $('.iw-photo-container').empty();
               $('.iw-photo-comment').empty();
-              $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
               photoNum = photoNum === 0 ? photos.length - 1 : photoNum - 1;
-              var img = document.createElement('IMG');
-              img.setAttribute('src', photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600}));
-              img.setAttribute('class', 'iw-photo');
-              img.addEventListener('load', function(event) {
-                $('.iw-photo-container').empty();
-                $('.iw-photo-comment').append('Photo ' +
-                (photoNum + 1) + '\/' + photos.length +
-                (photos.length > 1 ? ' - click or swipe to view next' : ''));
-                $('.iw-photo-container').append(img);
-              });
+              displayPhoto(photoNum, photos);
             };
             $('.iw-photo-container').click(nextPhoto);
             $('.iw-photo-container').on('swipeleft', nextPhoto);
