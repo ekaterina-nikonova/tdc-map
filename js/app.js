@@ -93,30 +93,26 @@ function initMap() {
     var address = place.formatted_address ? place.formatted_address : '';
     var notes = place.notes ? place.notes : '';
     iw.maxWidth = window.innerWidth;
+    // Facebook like/share button in info window - only if the place has URL
+    var service = new google.maps.places.PlacesService(map);
+    service.getDetails({placeId: place.place_id}, function(place, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK && place.url) {
+        var placeURL = place.url;
+        $('.iw-pano-photos-share').append('<div class=\"fb-like\" data-href=\"' + placeURL +
+        '\" data-width=\"100\" data-layout=\"button_count\"' +
+        'data-action=\"like\" data-size=\"large\" data-show-faces=\"false\"' +
+        'data-share=\"true\"></div>')
+      }
+    });
     iw.setContent (
       '<h1 class=\"iw-place-name\">' + name + '</h1>' +
       '<h2 class=\"iw-place-type\"> &ndash; ' + type + '</h2>' +
       '<div class=\"iw-place-address\">' + address + '</div>' +
       '<div class=\"iw-pano-photos-share\">' +
       '<input id=\"iw-pano-photos-btn\" type=\"button\" value=\"Show photos\">' +
-      '<div class=\"fb-like\" data-href=\"' + place.url +
-      '\" data-width=\"100\" data-layout=\"button_count\"' +
-      'data-action=\"like\" data-size=\"large\" data-show-faces=\"false\"' +
-      'data-share=\"true\"></div></div>' +
-      '<div id=\"iw-panorama\"></div>' +
+      '</div><div id=\"iw-panorama\"></div>' +
       '<div id=\"iw-notes\">' + notes + '</div>' +
       '<input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">');
-      // Facebook Share button
-      console.log($('.iw-facebook'));
-      $('.iw-facebook').append(
-        '<p>test</p>');
-        // '<div class=\"fb-share-btn\"><a href=\"#\">Share</a></div>');
-      $('.fb-share-btn').click(function() {
-        FB.ui({
-          method: 'share',
-          href: place.url,
-        }, function(response){console.log(response);});
-      });
   };
 
   var makeMarker = function(place) {
@@ -165,8 +161,6 @@ function initMap() {
     // StreetView in the info window
     var streetViewService = new google.maps.StreetViewService();
     var radius = 50;
-
-    // StreetView in the info window
     var panoOptions;
     function getStreetView(data, status) {
       if (status === google.maps.StreetViewStatus.OK) {
@@ -201,8 +195,6 @@ function initMap() {
         $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
         var img = document.createElement('IMG');
         var imgUrl = photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600});
-        var placeUrl = place.url;
-        console.log(placeUrl);
         img.setAttribute('src', imgUrl);
         img.setAttribute('class', 'iw-photo');
         img.addEventListener('load', function(event) {
