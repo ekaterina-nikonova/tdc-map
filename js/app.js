@@ -97,10 +97,26 @@ function initMap() {
       '<h1 class=\"iw-place-name\">' + name + '</h1>' +
       '<h2 class=\"iw-place-type\"> &ndash; ' + type + '</h2>' +
       '<div class=\"iw-place-address\">' + address + '</div>' +
+      '<div class=\"iw-pano-photos-share\">' +
       '<input id=\"iw-pano-photos-btn\" type=\"button\" value=\"Show photos\">' +
+      '<div class=\"fb-like\" data-href=\"' + place.url +
+      '\" data-width=\"100\" data-layout=\"button_count\"' +
+      'data-action=\"like\" data-size=\"large\" data-show-faces=\"false\"' +
+      'data-share=\"true\"></div></div>' +
       '<div id=\"iw-panorama\"></div>' +
       '<div id=\"iw-notes\">' + notes + '</div>' +
       '<input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">');
+      // Facebook Share button
+      console.log($('.iw-facebook'));
+      $('.iw-facebook').append(
+        '<p>test</p>');
+        // '<div class=\"fb-share-btn\"><a href=\"#\">Share</a></div>');
+      $('.fb-share-btn').click(function() {
+        FB.ui({
+          method: 'share',
+          href: place.url,
+        }, function(response){console.log(response);});
+      });
   };
 
   var makeMarker = function(place) {
@@ -196,15 +212,6 @@ function initMap() {
           (photos.length > 1 ? ' - click or swipe to view next' : '' +
           '</p>'));
           $('.iw-photo-container').append(img);
-          // Facebook Share button
-          $('.iw-photo-comment').append(
-            '<div class=\"fb-share-btn\"><a href=\"#\">Share</a></div>');
-          $('.fb-share-btn').click(function() {
-            FB.ui({
-              method: 'share',
-              href: placeUrl,
-            }, function(response){console.log(response);});
-          });
         });
       }
 
