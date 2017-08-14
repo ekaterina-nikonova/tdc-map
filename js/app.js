@@ -93,15 +93,13 @@ function initMap() {
     var address = place.formatted_address ? place.formatted_address : '';
     var notes = place.notes ? place.notes : '';
     iw.maxWidth = window.innerWidth;
-    // Facebook like/share button in info window - only if the place has URL
+    // Facebook like/share button in info window - only if the place has a website. Inner HTML of the FB plugin which is located in the end of the page body. 'data-href' is replaced by the website URL, the buttons are rebuilt and appended to the info window.
     var service = new google.maps.places.PlacesService(map);
     service.getDetails({placeId: place.place_id}, function(place, status) {
-      if (status === google.maps.places.PlacesServiceStatus.OK && place.url) {
-        var placeURL = place.url;
-        $('.iw-pano-photos-share').append('<div class=\"fb-like\" data-href=\"' + placeURL +
-        '\" data-width=\"100\" data-layout=\"button_count\"' +
-        'data-action=\"like\" data-size=\"large\" data-show-faces=\"false\"' +
-        'data-share=\"true\"></div>')
+      if (status === google.maps.places.PlacesServiceStatus.OK && place.website) {
+        $('#iw-facebook').attr('data-href', place.website);
+        FB.XFBML.parse();
+        $('.iw-pano-photos-share').append($('#iw-facebook').html());
       }
     });
     iw.setContent (

@@ -146,8 +146,12 @@ body {
 
 /* Info Window elements */
 
+#iw-pano-photos-share {
+  margin-bottom: 5px;
+}
+
 #iw-pano-photos-btn {
-  margin: 5px 0;
+  margin: 5px 20px 5px 0;
 }
 
 #iw-panorama {
@@ -167,6 +171,11 @@ body {
 
 .iw-preloader {
   margin-top: 25vh;
+}
+/* Appended to body (not displayed),
+inner HTML is used in info windows */
+#iw-facebook {
+  display: none;
 }
 
 /* Scrollbar (see https://css-tricks.com/examples/WebKitScrollbars/) */
