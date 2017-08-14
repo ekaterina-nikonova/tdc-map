@@ -401,7 +401,7 @@ xhttp.onreadystatechange = function() {
   myFunction(this);
   }
 };
-xhttp.open("GET", "http://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml", true);
+xhttp.open("GET", "https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml", true);
 xhttp.send();
 
 function myFunction(xml) {
