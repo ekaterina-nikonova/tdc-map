@@ -178,6 +178,11 @@ inner HTML is used in info windows */
   display: none;
 }
 
+iframe {
+  visibility: visible !important;
+  max-height: 30px;
+}
+
 /* Scrollbar (see https://css-tricks.com/examples/WebKitScrollbars/) */
 ::-webkit-scrollbar {
     width: 5px;

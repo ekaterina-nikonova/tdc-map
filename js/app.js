@@ -394,3 +394,16 @@ function initMap() {
     }
   });
 };
+
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+  myFunction(this);
+  }
+};
+xhttp.open("GET", "http://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml", true);
+xhttp.send();
+
+function myFunction(xml) {
+  console.log(xml);
+}
