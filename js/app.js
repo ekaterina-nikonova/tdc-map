@@ -395,15 +395,34 @@ function initMap() {
   });
 };
 
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function() {
-  if (this.readyState == 4 && this.status == 200) {
-  myFunction(this);
-  }
-};
-xhttp.open("GET", "https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml", true);
-xhttp.send();
+// Weather forecast
 
-function myFunction(xml) {
-  console.log(xml);
-}
+// $.ajax({
+//   // Avoiding CORS error, see: https://stackoverflow.com/questions/44553816/cross-origin-resource-sharing-when-you-dont-control-the-server
+//   url: 'https://cors-anywhere.herokuapp.com/https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml'
+// }).done(function(result) {
+//   var forecast = result.getElementsByTagName('forecast')[0].getElementsByTagName('tabular')[0];
+//   var forecasts = []; // Ready to use in the UI
+//
+//   var symbols = $.makeArray(forecast.getElementsByTagName('symbol'));
+//   var icons = [];
+//   symbols.forEach(function(symbol) {
+//     icons.push('img\/yr-icons\/' + symbol.getAttribute('var') + '.svg');
+//   });
+//   var windDirections = $.makeArray(forecast.getElementsByTagName('windDirection'));
+//   var windDirs = [];
+//   windDirections.forEach(function(direction) {
+//     windDirs.push(direction.getAttribute('name'));
+//   });
+//   var windSpeeds = $.makeArray(forecast.getElementsByTagName('windSpeed'));
+//   var windSps = [];
+//   windSpeeds.forEach(function(speed) {
+//     windSps.push(speed.getAttribute('name'));
+//   });
+//   var temperatures = $.makeArray(forecast.getElementsByTagName('temperature'));
+//   var temps = [];
+//   temperatures.forEach(function(temp) {
+//     temps.push(temp.getAttribute('value'));
+//   });
+//   console.log(forecast);
+// });

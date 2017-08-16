@@ -12,33 +12,13 @@
   <body>
     <!-- Load and initialize Facebook SDK -->
     <div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.10&appId=370042566748564";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
-  <!-- <script>
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId            : '370042566748564',
-        autoLogAppEvents : true,
-        xfbml            : true,
-        version          : 'v2.10'
-      });
-      FB.AppEvents.logPageView();
-    };
-
-    (function(d, s, id){
+    <script>(function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) {return;}
+      if (d.getElementById(id)) return;
       js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.10&appId=370042566748564";
       fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-  </script> -->
+    }(document, 'script', 'facebook-jssdk'));</script>
 
     <div data-role="page">
       <!-- The map with a menu button overlay -->
@@ -53,10 +33,27 @@
       <!-- Left side panel with buttons and inputs -->
       <div id="left-panel">
         <div class="panel-box">
-          <div class="panel-header">
+          <div class="panel-header left-panel-header">
             <img src="img/trondheim-coa.svg" class="coa" alt="Coat of arms of Trondheim municipality">
             <h1>Trondheim<br>TDC 2017 Map</h1>
-
+            <div class="forecast-section">
+              <div class="forecast-nav">
+                <i class="material-icons arrow">keyboard_arrow_left</i>
+              </div>
+              <div class="forecast-content">
+                <div class="forecast-date">
+                  <span data-bind="text: forecast.date"></span>
+                  <i class="material-icons refresh-icon">refresh</i>
+                </div>
+                <img data-bind="attr: {src: forecast.icon}" class="forecast-icon">
+                <p data-bind="text: forecast.conditions"></p>
+                <p data-bind="text: forecast.temperature" class="temperature"></p>
+                <p data-bind="text: forecast.wind"></p>
+              </div>
+              <div class="forecast-arrow">
+                <i class="material-icons arrow">keyboard_arrow_right</i>
+              </div>
+            </div>
           </div>
           <!-- "Date of the event" section -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">

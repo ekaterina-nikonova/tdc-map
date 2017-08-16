@@ -144,6 +144,36 @@ body {
   margin-top: 0;
 }
 
+/* Weather forecast */
+
+.forecast-section {
+  background-color: white;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+}
+
+.forecast-section p {
+  margin: 0;
+}
+
+.temperature {
+  font-size: 2em;
+}
+
+.refresh-icon {
+  font-size: 1em !important;
+}
+
+.arrow {
+  padding: 0;
+}
+
+.forecast-icon {
+  width: 48px;
+}
+
 /* Info Window elements */
 
 #iw-pano-photos-share {

@@ -91,8 +91,7 @@ function ViewModel() {
     {name: 'Vikåsen'}
   ]);
 
-  this.favourites = ko.observableArray([
-  ]);
+  this.favourites = ko.observableArray([]);
 
   this.list = ko.observableArray([]);
 
@@ -136,6 +135,66 @@ function ViewModel() {
       }
     });
   };
+
+  // Fetch weather forecast, build weather pages
+  this.forecasts = ko.observableArray([]);
+  this.forecast = {date: ko.observable('Now'), icon: ko.observable('img/meet.png'), conditions: ko.observable('Hail'), temperature: ko.observable('-65'), wind: ko.observable('Tornado')};
+  this.buildForecast = function() {
+    $.ajax({
+      // Avoiding CORS error, see: https://stackoverflow.com/questions/44553816/cross-origin-resource-sharing-when-you-dont-control-the-server
+      url: 'https://cors-anywhere.herokuapp.com/https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml'
+    }).done(function(result) {
+      var forecasts = $.makeArray(result.getElementsByTagName('forecast')[0].getElementsByTagName('tabular')[0].getElementsByTagName('time'));
+      forecasts.forEach(function(forecast) {
+        // console.log(forecast); // Uncomment this line to see the structure of each forecast or open the link https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml to see the whole XML file.
+        var months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        var fc = {};
+        switch (forecast.getAttribute('period')) {
+          case '0':
+          var time = 'night';
+          break;
+          case '1':
+          var time = 'morning';
+          break;
+          case '2':
+          var time = 'day';
+          break;
+          case '3':
+          var time = 'evening';
+          break;
+          default:
+          var time = 'all day';
+        }
+        fc.date = forecast.getAttribute('from').split('T')[0].split('-')[2] +
+          ' ' + months[parseInt(forecast.getAttribute('from').split('T')[0].split('-')[1], 10)] + ', ' + time;
+        fc.icon = 'img\/yr-icons\/' + forecast.getElementsByTagName('symbol')[0].getAttribute('var') + '.svg';
+        fc.conditions = forecast.getElementsByTagName('symbol')[0].getAttribute('name');
+        fc.temperature = forecast.getElementsByTagName('temperature')[0].getAttribute('value') +
+        '° C';
+        var windMPS = parseInt(forecast.getElementsByTagName('windSpeed')[0].getAttribute('mps'), 10);
+        fc.wind = forecast.getElementsByTagName('windSpeed')[0].getAttribute('name') +
+        ((windMPS >= 0.3) ? (' from ' + forecast.getElementsByTagName('windDirection')[0].getAttribute('name')) : '');
+        self.forecasts.push(fc);
+      });
+      // Building UI for weather forecast
+      var fcNum = ko.observable(0);
+      self.forecast.date(self.forecasts()[fcNum()].date);
+      self.forecast.icon(self.forecasts()[fcNum()].icon);
+      self.forecast.conditions(self.forecasts()[fcNum()].conditions);
+      self.forecast.temperature(self.forecasts()[fcNum()].temperature);
+      self.forecast.wind(self.forecasts()[fcNum()].wind);
+      function appendForecast(num) {
+        var forecast = self.forecasts()[num];
+        $('.left-panel-header').append(
+          '<div class=\"forecast\"><p>' + forecast.date[2] + ' ' + months[parseInt(forecast.date[1], 10)] + ', ' + time + '</p><p class=\"temperature\">' + forecast.temperature + '&#176; C' +
+          '</p><img src=\"' + forecast.icon + '\" class=\"forecast-icon\">' +
+          '<p>' + forecast.windSpeed + ' from ' + forecast.windDirection +
+          '</p></div>'
+        );
+      }
+      // appendForecast(fcNum);
+    });
+  };
 };
 
 var myViewModel = new ViewModel();
@@ -144,3 +203,5 @@ ko.applyBindings(myViewModel);
 myViewModel.snippet.subscribe(function() {
   myViewModel.leaveIfContains();
 });
+
+myViewModel.buildForecast();
