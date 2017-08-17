@@ -36,23 +36,29 @@
           <div class="panel-header left-panel-header">
             <img src="img/trondheim-coa.svg" class="coa" alt="Coat of arms of Trondheim municipality">
             <h1>Trondheim<br>TDC 2017 Map</h1>
+            <div class="forecast-header">
+              <h2 class="forecast-header-text" data-bind="text: forecastHeader"></h2>
+              <span><i class="material-icons refresh-icon forecast-nav-icons">refresh</i></span>
+            </div>
             <div class="forecast-section">
               <div class="forecast-nav">
-                <i class="material-icons arrow">keyboard_arrow_left</i>
+                <i class="material-icons arrow forecast-nav-icons arrow-prev">keyboard_arrow_left</i>
               </div>
               <div class="forecast-content">
                 <div class="forecast-date">
                   <span data-bind="text: forecast.date"></span>
-                  <i class="material-icons refresh-icon">refresh</i>
                 </div>
                 <img data-bind="attr: {src: forecast.icon}" class="forecast-icon">
-                <p data-bind="text: forecast.conditions"></p>
                 <p data-bind="text: forecast.temperature" class="temperature"></p>
+                <p data-bind="text: forecast.conditions"></p>
                 <p data-bind="text: forecast.wind"></p>
               </div>
               <div class="forecast-arrow">
-                <i class="material-icons arrow">keyboard_arrow_right</i>
+                <i class="material-icons arrow forecast-nav-icons arrow-next">keyboard_arrow_right</i>
               </div>
+            </div>
+            <div class="forecast-footnote">
+              <a data-bind="attr: {href: forecastCreditURL}, text: forecastCreditText" class="yr-link"></a>
             </div>
           </div>
           <!-- "Date of the event" section -->

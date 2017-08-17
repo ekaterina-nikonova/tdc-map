@@ -138,13 +138,19 @@ function ViewModel() {
 
   // Fetch weather forecast, build weather pages
   this.forecasts = ko.observableArray([]);
-  this.forecast = {date: ko.observable('Now'), icon: ko.observable('img/meet.png'), conditions: ko.observable('Hail'), temperature: ko.observable('-65'), wind: ko.observable('Tornado')};
+  this.forecast = {date: ko.observable(), icon: ko.observable(), conditions: ko.observable(), temperature: ko.observable(), wind: ko.observable()};
+  this.forecastCreditText = ko.observable();
+  this.forecastCreditURL = ko.observable();
+  this.forecastHeader = ko.observable();
   this.buildForecast = function() {
     $.ajax({
       // Avoiding CORS error, see: https://stackoverflow.com/questions/44553816/cross-origin-resource-sharing-when-you-dont-control-the-server
       url: 'https://cors-anywhere.herokuapp.com/https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml'
     }).done(function(result) {
       var forecasts = $.makeArray(result.getElementsByTagName('forecast')[0].getElementsByTagName('tabular')[0].getElementsByTagName('time'));
+      self.forecastCreditText(result.getElementsByTagName('credit')[0].getElementsByTagName('link')[0].getAttribute('text'));
+      self.forecastCreditURL(result.getElementsByTagName('credit')[0].getElementsByTagName('link')[0].getAttribute('url'));
+      self.forecastHeader('Weather in ' + result.getElementsByTagName('location')[0].getElementsByTagName('name')[0].childNodes[0].nodeValue);
       forecasts.forEach(function(forecast) {
         // console.log(forecast); // Uncomment this line to see the structure of each forecast or open the link https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml to see the whole XML file.
         var months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -177,22 +183,36 @@ function ViewModel() {
         self.forecasts.push(fc);
       });
       // Building UI for weather forecast
-      var fcNum = ko.observable(0);
-      self.forecast.date(self.forecasts()[fcNum()].date);
-      self.forecast.icon(self.forecasts()[fcNum()].icon);
-      self.forecast.conditions(self.forecasts()[fcNum()].conditions);
-      self.forecast.temperature(self.forecasts()[fcNum()].temperature);
-      self.forecast.wind(self.forecasts()[fcNum()].wind);
+      var fcNum = 0;
       function appendForecast(num) {
-        var forecast = self.forecasts()[num];
-        $('.left-panel-header').append(
-          '<div class=\"forecast\"><p>' + forecast.date[2] + ' ' + months[parseInt(forecast.date[1], 10)] + ', ' + time + '</p><p class=\"temperature\">' + forecast.temperature + '&#176; C' +
-          '</p><img src=\"' + forecast.icon + '\" class=\"forecast-icon\">' +
-          '<p>' + forecast.windSpeed + ' from ' + forecast.windDirection +
-          '</p></div>'
-        );
+        $('.forecast-nav-icons').css('display', 'inline-block');
+        self.forecast.date(self.forecasts()[fcNum].date);
+        self.forecast.icon(self.forecasts()[fcNum].icon);
+        self.forecast.conditions(self.forecasts()[fcNum].conditions);
+        self.forecast.temperature(self.forecasts()[fcNum].temperature);
+        self.forecast.wind(self.forecasts()[fcNum].wind);
       }
-      // appendForecast(fcNum);
+      appendForecast(fcNum);
+
+      // Next/previous forecast, reset
+      $('.arrow-next').click(function() {
+        if (fcNum < self.forecasts().length - 1) {
+          fcNum++;
+          appendForecast(fcNum);
+        }
+      });
+
+      $('.arrow-prev').click(function() {
+        if (fcNum > 0) {
+          fcNum--;
+          appendForecast(fcNum);
+        }
+      });
+
+      $('.refresh-icon').click(function() {
+        fcNum = 0;
+        appendForecast(fcNum);
+      });
     });
   };
 };

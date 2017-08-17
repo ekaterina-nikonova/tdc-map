@@ -15,7 +15,8 @@ h1 {
 }
 
 h2 {
-  font-size: 1em;
+  font-size: 1.1em;
+  font-weight: bold;
   text-transform: uppercase;
 }
 
@@ -92,7 +93,6 @@ body {
   overflow-x: hidden;
   top: 0;
   bottom: 0;
-  line-height: 2em;
   background-color: #e3eaef;
   border-right: 1px solid #b6c9d9;
   padding: 15px;
@@ -150,7 +150,6 @@ body {
   background-color: white;
   text-align: center;
   text-transform: uppercase;
-  margin-bottom: 8px;
   display: flex;
 }
 
@@ -158,16 +157,48 @@ body {
   margin: 0;
 }
 
-.temperature {
-  font-size: 2em;
+.forecast-header {
+  background-color: white;
+  text-align: center;
+}
+
+.forecast-header-text {
+  display: inline-block;
+  padding: 0 5px;
+  margin: 0;
 }
 
 .refresh-icon {
   font-size: 1em !important;
+  padding: 0;
+  display: none;
+}
+
+.forecast-footnote {
+  background-color: white;
+  margin-bottom: 8px;
+  padding: 0 5px;
+}
+
+.yr-link {
+  font-size: 0.7em;
+  color: #9ab !important;
+  text-decoration: none;
+}
+
+.yr-link:hover {
+  text-shadow: 1px 1px 2px rgba(158, 158, 158, 0.76);
+}
+
+.temperature {
+  font-size: 2em !important;
+  display: inline;
+  vertical-align: baseline;
 }
 
 .arrow {
   padding: 0;
+  display: none;
 }
 
 .forecast-icon {
