@@ -136,7 +136,7 @@ function ViewModel() {
     });
   };
 
-  // Fetch weather forecast, build weather pages
+  // Fetch weather forecast
   this.forecasts = ko.observableArray([]);
   this.forecast = {date: ko.observable(), icon: ko.observable(), conditions: ko.observable(), temperature: ko.observable(), wind: ko.observable()};
   this.forecastCreditText = ko.observable();
@@ -182,7 +182,7 @@ function ViewModel() {
         ((windMPS >= 0.3) ? (' from ' + forecast.getElementsByTagName('windDirection')[0].getAttribute('name')) : '');
         self.forecasts.push(fc);
       });
-      // Building UI for weather forecast
+      // Updating values for a single forecast
       var fcNum = 0;
       function appendForecast(num) {
         $('.forecast-nav-icons').css('display', 'inline-block');

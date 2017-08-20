@@ -72,7 +72,13 @@ function initMap() {
     } else $('.panel-opener').css('display', 'inline-block');
   });
 
-  var iw = new google.maps.InfoWindow({}); // Only one exists at a time
+  var iw = new google.maps.InfoWindow({}); // Only one window exists at a time
+  var route = new google.maps.DirectionsRenderer({
+    draggable: true,
+    polylineOptions: {
+      strokeColor: 'steelBlue'
+    }
+  });
 
   // TODO: Remove if not used
   var getPlaceDetails = function(id) {
@@ -102,7 +108,7 @@ function initMap() {
         $('.iw-pano-photos-share').append($('#iw-facebook').html());
       }
     });
-    iw.setContent (
+    iw.setContent(
       '<h1 class=\"iw-place-name\">' + name + '</h1>' +
       '<h2 class=\"iw-place-type\"> &ndash; ' + type + '</h2>' +
       '<div class=\"iw-place-address\">' + address + '</div>' +
@@ -124,6 +130,9 @@ function initMap() {
         case 'restaurant':
         case 'bakery':
           icon = 'img/cafe.png';
+          break;
+        case 'bar':
+          icon = 'img/bar.png';
           break;
         case 'lodging':
           icon = 'img/hotel.png';
@@ -245,6 +254,34 @@ function initMap() {
       makeInfoWindow(place);
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       iw.open(map, marker);
+
+      // Show directions button
+      $('#iw-directions-btn').click(function() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var origin = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var directionsService = new google.maps.DirectionsService;
+            var mode = 'WALKING';
+            directionsService.route({
+              origin: origin,
+              destination: place.geometry.location,
+              travelMode: mode
+            }, function(response, status) {
+              if (status = google.maps.DirectionsStatus.OK) {
+                iw.close();
+                route.setMap(map);
+                route.setDirections(response);
+              }
+            });
+          }, geocoderError);
+        } else {
+          alert('Geolocation is not supported.');
+        }
+      });
+
       map.addListener('click', function() {iw.close();});
       $('#iw-pano-photos-btn').click(function() {
         marker.pic === 'panorama' ? showPhotos(marker) : showPanorama(panoOptions, marker);
@@ -264,6 +301,7 @@ function initMap() {
     myViewModel.markersOnMapIds.removeAll();
     myViewModel.markersOnMapPlaces.removeAll();
     morePlaces = false;
+    route.setMap(null);
   };
 
   // Showing initial markers on the map
@@ -329,31 +367,30 @@ function initMap() {
   searchBox.addListener('places_changed', findMorePlaces);
 
   // My position: 'Show my location' button and directions
+  function geocoderError(error) {
+    var errorText;
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+      errorText = 'Access denied.';
+      break;
+      case error.POSITION_UNAVAILABLE:
+      errorText = 'Location info unavailable.';
+      break;
+      case error.TIMEOUT:
+      errorText = 'Request timed out.';
+      break;
+      default:
+      errorText = 'Unknown error.';
+    }
+    alert(errorText);
+  }
   var myPosition,
     currentPlace,
     markerCurrentPlace = new google.maps.Marker();
   $('#my-location-show').click(function() {
     markerCurrentPlace.setMap(null);
-    function geocoderError(error) {
-      var errorText;
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
-          errorText = 'Access denied.';
-          break;
-        case error.POSITION_UNAVAILABLE:
-          errorText = 'Location info unavailable.';
-          break;
-        case error.TIMEOUT:
-          errorText = 'Request timed out.';
-          break;
-        default:
-          errorText = 'Unknown error.';
-      }
-      alert(errorText);
-    }
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
-        console.log(position);
         myPosition = position;
         var myLocation = {
           lat: myPosition.coords.latitude,
@@ -394,35 +431,3 @@ function initMap() {
     }
   });
 };
-
-// Weather forecast
-
-// $.ajax({
-//   // Avoiding CORS error, see: https://stackoverflow.com/questions/44553816/cross-origin-resource-sharing-when-you-dont-control-the-server
-//   url: 'https://cors-anywhere.herokuapp.com/https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml'
-// }).done(function(result) {
-//   var forecast = result.getElementsByTagName('forecast')[0].getElementsByTagName('tabular')[0];
-//   var forecasts = []; // Ready to use in the UI
-//
-//   var symbols = $.makeArray(forecast.getElementsByTagName('symbol'));
-//   var icons = [];
-//   symbols.forEach(function(symbol) {
-//     icons.push('img\/yr-icons\/' + symbol.getAttribute('var') + '.svg');
-//   });
-//   var windDirections = $.makeArray(forecast.getElementsByTagName('windDirection'));
-//   var windDirs = [];
-//   windDirections.forEach(function(direction) {
-//     windDirs.push(direction.getAttribute('name'));
-//   });
-//   var windSpeeds = $.makeArray(forecast.getElementsByTagName('windSpeed'));
-//   var windSps = [];
-//   windSpeeds.forEach(function(speed) {
-//     windSps.push(speed.getAttribute('name'));
-//   });
-//   var temperatures = $.makeArray(forecast.getElementsByTagName('temperature'));
-//   var temps = [];
-//   temperatures.forEach(function(temp) {
-//     temps.push(temp.getAttribute('value'));
-//   });
-//   console.log(forecast);
-// });

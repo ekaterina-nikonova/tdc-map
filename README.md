@@ -40,8 +40,9 @@
  - show directions
 
 * Third-side API
- - share on Facebook
+ - share/like on Facebook
  - login with Google (for Firebase :question:)
+ - weather forecast from Yr
 
 # Acknowledgements
 * The map style is based on the [Muted Blue theme by Jon Edmiston](https://snazzymaps.com/style/83/muted-blue).
@@ -49,3 +50,4 @@
 * Icons are generated with [The Map Icons Collection](https://mapicons.mapsmarker.com).
 * The preloader icon is from [Preloaders.net](https://preloaders.net).
 * Scrollbars are styled using [this template](https://css-tricks.com/examples/WebKitScrollbars/).
+* Weather forecast from [Yr.no](http://yr.no).
