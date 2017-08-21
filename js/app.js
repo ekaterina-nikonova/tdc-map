@@ -74,7 +74,6 @@ function initMap() {
 
   var iw = new google.maps.InfoWindow({}); // Only one window exists at a time
   var route = new google.maps.DirectionsRenderer({
-    draggable: true,
     polylineOptions: {
       strokeColor: 'steelBlue'
     }
@@ -116,7 +115,14 @@ function initMap() {
       '<input id=\"iw-pano-photos-btn\" type=\"button\" value=\"Show photos\">' +
       '</div><div id=\"iw-panorama\"></div>' +
       '<div id=\"iw-notes\">' + notes + '</div>' +
-      '<input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">');
+      '<div class=\"iw-directions\"><input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">' +
+      '<label for=\"iw-directions-mode\">Travel mode:</label>' +
+      '<select id=\"iw-directions-mode\">' +
+      '<option value=\"WALKING\">Walking</option>' +
+      '<option value=\"DRIVING\">Driving</option>' +
+      '<option value=\"TRANSIT\">Transit</option>' +
+      '<option value=\"BICYCLING\">Bicycling</option></select></div>'
+    );
   };
 
   var makeMarker = function(place) {
@@ -264,16 +270,27 @@ function initMap() {
               lng: position.coords.longitude
             };
             var directionsService = new google.maps.DirectionsService;
-            var mode = 'WALKING';
             directionsService.route({
               origin: origin,
               destination: place.geometry.location,
-              travelMode: mode
+              travelMode: $('#iw-directions-mode').val()
             }, function(response, status) {
               if (status = google.maps.DirectionsStatus.OK) {
-                iw.close();
+                console.log(response);
+                clearMap();
                 route.setMap(map);
                 route.setDirections(response);
+                myViewModel.dirInstructions.removeAll();
+                myViewModel.dirInstructionsHeader(
+                  response.request.travelMode + ': ' +
+                  response.routes[0].legs[0].distance.text + ', ' +
+                  response.routes[0].legs[0].duration.text
+                );
+                myViewModel.dirInstructionsFrom(response.routes[0].legs[0].start_address);
+                myViewModel.dirInstructionsTo(response.routes[0].legs[0].end_address);
+                response.routes[0].legs[0].steps.forEach(function(step) {
+                  myViewModel.dirInstructions.push(step.instructions);
+                });
               }
             });
           }, geocoderError);
@@ -302,6 +319,10 @@ function initMap() {
     myViewModel.markersOnMapPlaces.removeAll();
     morePlaces = false;
     route.setMap(null);
+    myViewModel.dirInstructions.removeAll();
+    myViewModel.dirInstructionsHeader('');
+    myViewModel.dirInstructionsFrom('');
+    myViewModel.dirInstructionsTo('');
   };
 
   // Showing initial markers on the map

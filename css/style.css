@@ -244,7 +244,40 @@ iframe {
   max-height: 30px;
 }
 
+.iw-directions {
+  display: flex;
+}
+
+.iw-directions label {
+  margin: 0 5px 0 15px;
+}
+
+.directions-item {
+  white-space: normal !important;
+}
+
+.dir-from {
+  background-color: #7fc740 !important;
+  text-shadow: none !important;
+}
+
+.dir-to {
+  background-color: #f76a5e !important;
+  text-shadow: none !important;
+}
+
+.dir-from:empty,
+.dir-to:empty,
+.directions-header:empty {
+  display: none;
+}
+
+[class^="forecast-"]:empty {
+  display: none;
+}
+
 /* Scrollbar (see https://css-tricks.com/examples/WebKitScrollbars/) */
+
 ::-webkit-scrollbar {
     width: 5px;
 }

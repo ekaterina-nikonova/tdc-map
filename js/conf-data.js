@@ -215,6 +215,12 @@ function ViewModel() {
       });
     });
   };
+
+  // Instructions for directions
+  this.dirInstructionsHeader = ko.observable();
+  this.dirInstructionsFrom = ko.observable();
+  this.dirInstructionsTo = ko.observable();
+  this.dirInstructions = ko.observableArray([]);
 };
 
 var myViewModel = new ViewModel();

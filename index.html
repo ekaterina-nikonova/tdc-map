@@ -121,6 +121,15 @@
           <div class="panel-header">
             <h1>What's on the map</h1>
           </div>
+          <!-- Instructions for directions -->
+          <ul id="dir-from-to" data-role="listview">
+            <li class="dir-from directions-item" data-bind="text: dirInstructionsFrom"></li>
+            <li class="dir-to directions-item" data-bind="text: dirInstructionsTo"></li>
+          </ul>
+          <h2 data-bind="text: dirInstructionsHeader"></h2>
+          <ul id="dir-instructions" data-role="listview" data-bind="foreach: {data: dirInstructions, as: 'instruction'}">
+            <li class="directions-item" data-bind="html: instruction"></li>
+          </ul>
           <!-- Filter -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
             <h4>Filter</h4>
