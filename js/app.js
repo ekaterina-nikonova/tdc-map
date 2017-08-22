@@ -276,7 +276,6 @@ function initMap() {
               travelMode: $('#iw-directions-mode').val()
             }, function(response, status) {
               if (status = google.maps.DirectionsStatus.OK) {
-                console.log(response);
                 clearMap();
                 route.setMap(map);
                 route.setDirections(response);
@@ -336,15 +335,11 @@ function initMap() {
     places.forEach(function(place) {
       var placeId = place.place_id;
       var marker = makeMarker(place);
-      // All markers should be unique. The markersOnMapIds array tracks that.
-      if (!myViewModel.markersOnMapIds().includes(placeId)) {
-        myViewModel.markersOnMap.push(marker);
-        myViewModel.markersOnMapIds.push(placeId);
-        myViewModel.markersOnMapPlaces.push({place});
-        marker.setMap(map);
-        marker.onMap(true);
-        bounds.extend(marker.position);
-      }
+      myViewModel.markersOnMap.push(marker);
+      myViewModel.markersOnMapPlaces.push({place});
+      marker.setMap(map);
+      marker.onMap(true);
+      bounds.extend(marker.position);
     });
     map.fitBounds(bounds);
     if (places.length === 1) {
@@ -355,6 +350,7 @@ function initMap() {
   showMarkers(myViewModel.confPlaces());
 
   $('#show').click(function() {
+    clearMap();
     showMarkers(myViewModel.confPlaces());
   });
   $('#clear-map-btn').click(clearMap);

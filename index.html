@@ -36,56 +36,40 @@
           <div class="panel-header left-panel-header">
             <img src="img/trondheim-coa.svg" class="coa" alt="Coat of arms of Trondheim municipality">
             <h1>Trondheim<br>TDC 2017 Map</h1>
-            <div class="forecast-header">
-              <h2 class="forecast-header-text" data-bind="text: forecastHeader"></h2>
-              <span><i class="material-icons refresh-icon forecast-nav-icons">refresh</i></span>
-            </div>
+            <!-- Weather forecast -->
             <div class="forecast-section">
-              <div class="forecast-nav">
-                <i class="material-icons arrow forecast-nav-icons arrow-prev">keyboard_arrow_left</i>
+              <div class="forecast-header">
+                <h2 class="forecast-header-text" data-bind="text: forecastHeader"></h2>
+                <span><i class="material-icons refresh-icon forecast-nav-icons">refresh</i></span>
               </div>
-              <div class="forecast-content">
-                <div class="forecast-date">
-                  <span data-bind="text: forecast.date"></span>
+              <div class="forecast-main">
+                <div class="forecast-nav">
+                  <i class="material-icons arrow forecast-nav-icons arrow-prev">keyboard_arrow_left</i>
                 </div>
-                <img data-bind="attr: {src: forecast.icon}" class="forecast-icon">
-                <p data-bind="text: forecast.temperature" class="temperature"></p>
-                <p data-bind="text: forecast.conditions"></p>
-                <p data-bind="text: forecast.wind"></p>
+                <div class="forecast-content">
+                  <div class="forecast-date">
+                    <span data-bind="text: forecast.date"></span>
+                  </div>
+                  <img data-bind="attr: {src: forecast.icon}" class="forecast-icon">
+                  <p data-bind="text: forecast.temperature" class="temperature"></p>
+                  <p data-bind="text: forecast.conditions"></p>
+                  <p data-bind="text: forecast.wind"></p>
+                </div>
+                <div class="forecast-arrow">
+                  <i class="material-icons arrow forecast-nav-icons arrow-next">keyboard_arrow_right</i>
+                </div>
               </div>
-              <div class="forecast-arrow">
-                <i class="material-icons arrow forecast-nav-icons arrow-next">keyboard_arrow_right</i>
+              <div class="forecast-footnote">
+                <a data-bind="attr: {href: forecastCreditURL}, text: forecastCreditText" class="yr-link" target="_blank"></a>
               </div>
-            </div>
-            <div class="forecast-footnote">
-              <a data-bind="attr: {href: forecastCreditURL}, text: forecastCreditText" class="yr-link" target="_blank"></a>
             </div>
           </div>
           <!-- "Date of the event" section -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
             <h4>Show places</h4>
             <input id="show" type="button" value="Day of the event">
-            <label for="find-more-places">Find more places</label>
+            <label for="find-more-places">Find more places:</label>
             <input id="find-more-places" type="search" placeholder="e.g. cafe or hotel">
-          </div>
-          <!-- Filters -->
-          <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
-            <h4 id="filters-header">Filters</h4>
-            <label for="max-duration">Within</label>
-            <select id="max-duration">
-              <option value="10">10 min</option>
-              <option value="15">15 min</option>
-              <option value="30">30 min</option>
-              <option value="60">1 hour</option>
-            </select>
-            <select id="mode">
-              <option value="DRIVING">drive</option>
-              <option value="WALKING">walk</option>
-              <option value="BICYCLING">bike</option>
-              <option value="TRANSIT">transit ride</option>
-            </select>
-            <label for="mode">of my location</label>
-            <hr>
             <fieldset>
               <legend>My location:</legend>
               <div id="my-location-group">
@@ -93,21 +77,124 @@
                 <a href="#" class="ui-btn my-location-btn" id="my-location-hide">Hide</a>
               </div>
             </fieldset>
-            <hr>
-            <label for="filter-only">Only places:</label>
-            <div id="filter-only" class="ui-field-contain">
-              <input id="open-now" type="checkbox" value="false">
-              <label for="open-now">Open now</label>
-              <input id="rated-four-plus" type="checkbox" value="false">
-              <label for="rated-four-plus">Rated 4+</label>
-              <label for="neighbourhood">In</label>
-              <select id="neighbourhood" data-bind="foreach: neighbourhoods">
-                <option data-bind="text: name"></option>
-              </select>
-            </div>
           </div>
+          <!-- About section -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
             <h4>About</h4>
+            <a href="#how-to-use" data-rel="popup" data-role="button" data-transition="pop" data-position-to="window">How to use</a>
+            <div class="popup-dialog" data-role="popup" id="how-to-use">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <div data-role="header"><h1>Using the app</h1></div>
+              <div role="main" class="ui-content popup-text">
+                <h2>Initial screen</h2>
+                <p>
+                  The first thing you see is the map of Trondheim city center with a few markers:
+                </p>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td><img src="img/meet.png" alt="Meeting poing marker"></td>
+                      <td>Clarion Hotel &amp; Congress, the Conference venue</td>
+                    </tr>
+                    <tr>
+                      <td><img src="img/train.png" alt="Train station marker"></td>
+                      <td>Trondheim S, central train station</td>
+                    </tr>
+                    <tr>
+                      <td><img src="img/bus.png" alt="Bus station marker"></td>
+                      <td>Trondheim bussterminal, bus station</td>
+                    </tr>
+                    <tr>
+                      <td><img src="img/cafe.png" alt="Cafe marker"></td>
+                      <td>A few selected cafés that are open before 9 o'clock</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <h2>Info window</h2>
+                <p>Click on a marker, and an info window will open. In addition to the name of the place, it can contain:</p>
+                <ul>
+                  <li>a panorama of the sctreet or interior and photos of the place, if available,</li>
+                  <li>Facebook <strong>Like</strong> and <strong>Share</strong> buttons, if the place has a website listed on Google Maps,</li>
+                  <li>address and notes, and</li>
+                  <li>tools for getting directions from your location.</li>
+                </ul>
+                <h2>Show directions</h2>
+                <p>To get directions to the place from your current location, select a travel mode and click <strong>Show directions</strong>. The blue line on the map shows the fastest route. To see step-by-step instructions, open the right side panel (see <em>Side panels</em> below.)</p>
+                <h2>Side panels</h2>
+                <h3>Left panel</h3>
+                <p>The left panel contains weather forecast, tools for displaying places on the map, and the <strong>About</strong> section with additional information and the contact form. The <strong>Clear the map</strong> button removes all markers from the map and clears the right panel.</p>
+                <h4>Weather forecast</h4>
+                <p>Use the arrows <i class="material-icons material-inline">keyboard_arrow_left</i> and <i class="material-icons material-inline">keyboard_arrow_right</i> to view weather forecast for the previous and the next period. The <i class="material-icons material-inline">refresh</i> icon resets the forecast.</p>
+                <h4>Show places</h4>
+                <p>The <strong>Day of the event</strong> button returns the map to the initial state and shows the selected markers described above, in the <strong>Initial screen</strong> section.</p>
+                <h4>Find more places</h4>
+                <p>The search box allows you to find other places on the map, using both generic terms, such as <em>restaurant</em> or <em>car rental services</em>, and specific names, such as <em>NTNU University Museum</em>.</p>
+                <p><em class="warning-text">Please note that the search is performed within the viewport bounds. If you can't find the specific place or want to see more results, try to zoom out the map.</em></p>
+                <h4>My location</h4>
+                <p>The <strong>Show</strong> button shows your present location. The <strong>Hide</strong> button hides the marker. If the marker is not present on the map, the <strong>Hide</strong> button is inactive.</p>
+                <h3>Right panel</h3>
+                <h4>Marker list</h4>
+                <p>After you have opened the initial screen or performed a search, all the markers that are present on the map, are also listed on the right panel. On a PC, you can hover the mouse pointer over an item in the list, and the corresponding marker will start to bounce. On any device, you can click or tap a list item to open its info window as if you clicked or tapped the marker itself.</p>
+                <p>You can <strong>filter markers</strong> using the text form. Start typing, and only the markers containing the text will remain on the map and in the list.</p>
+                <h4>Directions</h4>
+                <p>When you press the <strong>Show directions</strong> button in an info window, all markers are removed from the map and are no longer listed. Instead, you can see the names of the starting point and the destination, estimated distance and time, and step-by-step instructions for the directions.</p>
+              </div>
+            </div>
+            <a href="#about-the-app" data-rel="popup" data-role="button" data-transition="pop" data-position-to="window">About the app</a>
+            <div class="popup-dialog" data-role="popup" id="about-the-app">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <div data-role="header"><h1>About the app</h1></div>
+              <div role="main" class="ui-content popup-text">
+                <h2>What it is</h2>
+                <p>This app is created as a part of the <a href="https://www.udacity.com/">Udacity</a> Front-End Web Development Nanodegree program. It is built using following tools and technologies (required tools are marked with a checkmark <i class="material-icons material-inline">check</i>):</p>
+                <ul>
+                  <li><a href="https://developers.google.com/maps/">Google Maps API</a><i class="material-icons material-inline">check</i></li>
+                  <li><a href="http://knockoutjs.com/">KnockoutJS</a> framework<i class="material-icons material-inline">check</i></li>
+                  <li><a href="http://jquery.com/">jQuery</a> and <a href="http://jquerymobile.com/">jQuery Mobile</a> libraries</li>
+                  <li><a href="https://developers.facebook.com/">Facebook API</a></li>
+                  <li><a href="http://om.yr.no/verdata/free-weather-data/">Yr.no API</a><i class="material-icons material-inline">check</i> (required as a third-party API with AJAX requests)</li>
+                  <li><a href="https://material.io/icons/">Google Material Icons</a></li>
+                </ul>
+                <h2>Acknowledgements</h2>
+                <ul>
+                  <li>The map style is based on the <a href="https://snazzymaps.com/style/83/muted-blue">Muted Blue theme by Jon Edmiston</a></li>.
+                  <li>The Coat of arms of Trondheim is by <a href="https://en.wikipedia.org/wiki/File:Trondheim_komm.svg">Wikipedia</a> user <a href="https://en.wikipedia.org/wiki/User:Mysid">Mysid</a>.</li>
+                  <li>Marker icons are generated using <a href="https://mapicons.mapsmarker.com">The Map Icons Collection</a>.</li>
+                  <li>The preloader icon is from <a href="https://preloaders.net">Preloaders.net</a>.</li>
+                  <li>Scrollbars are styled using <a href="https://css-tricks.com/examples/WebKitScrollbars/">this template</a>.</li>
+                </ul>
+                <h2>Disclaimer</h2>
+                <p>The main purpose of this app is to provide information about places in Trondheim, Norway. Therefore its use for other cities and regions can be limited. It contains links and pointers to external data that are provided for the user's convenience. The author does not guarantee the accuracy, relevance, timeliness or completeness of this information.</p>
+                <p>The app is created with the <a href="https://2017.trondheimdc.no/">Trondheim Developer Conference (TDC) 2017</a> in mind, but is not endorsed, authorized, approved, recommended by or affiliated with TDC.</p>
+              </div>
+            </div>
+            <a href="#contact-me" data-rel="popup" data-role="button" data-transition="pop" data-position-to="window">Contact me</a>
+            <div class="popup-dialog" data-role="popup" id="contact-me">
+              <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+              <div data-role="header"><h1>Send a message</h1></div>
+              <div role="main" class="ui-content popup-text">
+                <div class="ui-controlgroup">
+                  <button data-icon="user"></button>
+                  <input class="ui-controlgroup-item" id="name" type="text" name="name" placeholder="Your name">
+                </div>
+                <div class="ui-field-contain">
+                  <label for="name"><i class="material-icons material-inline">account_box</i></label>
+                  <input id="name" type="text" name="name" placeholder="Your name">
+                </div>
+                <div class="ui-field-contain">
+                  <label for="email"><i class="material-icons material-inline">email</i></label>
+                  <input id="email" type="text" name="email" placeholder="Your email address">
+                </div>
+                <div class="ui-field-contain">
+                  <label for="subject"><i class="material-icons material-inline">info</i></label>
+                  <input id="subject" type="text" name="subject" placeholder="Subject">
+                </div>
+                <div class="ui-field-contain">
+                  <label for="message"><i class="material-icons material-inline">mode_edit</i></label>
+                  <textarea id="message" name="message" rows="9" cols="60" placeholder="Message&hellip;"></textarea>
+                </div>
+              </div>
+            </div>
             <div class="fb-like" data-href="https://ekaterina-nikonova.github.io/tdc-map/" data-width="150" data-layout="button_count" data-action="like" data-size="large" data-show-faces="false" data-share="true"></div>
           </div>
           <div class="clear-map">
@@ -132,7 +219,7 @@
           </ul>
           <!-- Filter -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
-            <h4>Filter</h4>
+            <h4>Filter markers</h4>
             <label for="list-filter">Only results that contain:</label>
             <input id="list-filter" type="search" data-bind="textInput: snippet" placeholder="Enter text">
           </div>
@@ -160,7 +247,6 @@
     src="https://maps.googleapis.com/maps/api/js?libraries=geometry,places&key=AIzaSyBrT-kgZjuDd3EOcaN8dzBXWnBCYfIFh0I&callback=initMap&language=en"></script>
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Raleway:300" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <div id="iw-facebook" class="fb-like" data-href="http://google.com" data-width="150" data-layout="button_count" data-action="like" data-size="large" data-show-faces="false" data-share="true"></div>
-
+    <div id="iw-facebook" class="fb-like" data-href="#" data-width="150" data-layout="button_count" data-action="like" data-size="large" data-show-faces="false" data-share="true"></div>
   </body>
 </html>

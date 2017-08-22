@@ -193,6 +193,7 @@ function ViewModel() {
         self.forecast.wind(self.forecasts()[fcNum].wind);
       }
       appendForecast(fcNum);
+      $('.forecast-section').css('display', 'block');
 
       // Next/previous forecast, reset
       $('.arrow-next').click(function() {
