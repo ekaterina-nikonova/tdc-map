@@ -248,9 +248,16 @@ function ViewModel() {
       }, 2000);
       self.clearMsg();
     }).catch(function(error) {
-      $('#popup-msg-fail').css('opacity', 1);
+      // Alter the 'Send' button instead of popup (can be covered by form)
+      $('.contact-send-btn').text('Cannot send');
+      $('.contact-send-btn').removeClass('ui-icon-arrow-right');
+      $('.contact-send-btn').addClass('ui-icon-alert');
+      $('.contact-send-btn').css('background-color', 'rgba(255, 162, 155, 0.5)');
       setTimeout(function() {
-        $('#popup-msg-fail').css('opacity', 0);
+        $('.contact-send-btn').text('Send');
+        $('.contact-send-btn').removeClass('ui-icon-alert');
+        $('.contact-send-btn').addClass('ui-icon-arrow-right');
+        $('.contact-send-btn').css('background-color', '');
       }, 2000);
       console.log('Failed: ' + error);
     });
