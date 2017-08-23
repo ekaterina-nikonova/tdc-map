@@ -315,6 +315,20 @@ iframe {
   color: #e03;
 }
 
+.no-decor-list {
+  list-style: circle;
+}
+
+#about-the-app a {
+  text-decoration: none;
+  vertical-align: text-bottom;
+  font-weight: normal !important;
+}
+
+#how-to-use strong {
+  vertical-align: text-bottom;
+}
+
 /* 'Contact me' popup */
 
 .ui-field-contain {
@@ -343,4 +357,23 @@ iframe {
 
 .contact-input:invalid {
   border: 1px solid rgba(255, 34, 59, 0.3);
+}
+
+.msg-popup {
+  border-radius: 10px;
+  background-color: #aaa;
+  display: block;
+  position: absolute;
+  bottom: 15px;
+  margin-left: 50vw;
+  transform: translateX(-50%);
+  padding: 5px 20px;
+  visibilitys: hidden;
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0,1,0.5,1);
+  z-index: 50;
+}
+
+.toast-text {
+  color: white;
 }

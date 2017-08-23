@@ -229,17 +229,31 @@ function ViewModel() {
   this.contactSubj = ko.observable('');
   this.contactMsg = ko.observable('');
   this.clearMsg = function() {
-    this.contactName('');
-    this.contactEmail('');
-    this.contactSubj('');
-    this.contactMsg('');
+    self.contactName('');
+    self.contactEmail('');
+    self.contactSubj('');
+    self.contactMsg('');
     $('#contact-me').popup('close');
   };
   this.sendMsg = function() {
-
-    console.log(self.contactName() + '\n' + self.contactEmail() + '\n' + self.contactSubj() + '\n' + self.contactMsg() + '\nSent!');
-
-    self.clearMsg();
+    database.ref('messages/' + Date.now()).set({
+      name: self.contactName(),
+      email: self.contactEmail(),
+      subject: self.contactSubj(),
+      message: self.contactMsg()
+    }).then(function() {
+      $('#popup-msg-success').css('opacity', 1);
+      setTimeout(function() {
+        $('#popup-msg-success').css('opacity', 0);
+      }, 2000);
+      self.clearMsg();
+    }).catch(function(error) {
+      $('#popup-msg-fail').css('opacity', 1);
+      setTimeout(function() {
+        $('#popup-msg-fail').css('opacity', 0);
+      }, 2000);
+      console.log('Failed: ' + error);
+    });
   }
 };
 

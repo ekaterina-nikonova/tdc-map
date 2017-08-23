@@ -146,26 +146,27 @@
               <div data-role="header"><h1>About the app</h1></div>
               <div role="main" class="ui-content popup-text">
                 <h2>What it is</h2>
-                <p>This app is created as a part of the <a href="https://www.udacity.com/">Udacity</a> Front-End Web Development Nanodegree program. It is built using following tools and technologies (required tools are marked with a checkmark <i class="material-icons material-inline">check</i>):</p>
-                <ul>
-                  <li><a href="https://developers.google.com/maps/">Google Maps API</a><i class="material-icons material-inline">check</i></li>
-                  <li><a href="http://knockoutjs.com/">KnockoutJS</a> framework<i class="material-icons material-inline">check</i></li>
-                  <li><a href="http://jquery.com/">jQuery</a> and <a href="http://jquerymobile.com/">jQuery Mobile</a> libraries</li>
-                  <li><a href="https://developers.facebook.com/">Facebook API</a></li>
-                  <li><a href="http://om.yr.no/verdata/free-weather-data/">Yr.no API</a><i class="material-icons material-inline">check</i> (required as a third-party API with AJAX requests)</li>
-                  <li><a href="https://material.io/icons/">Google Material Icons</a></li>
+                <p>This app is created as a part of the <a target="_blank" href="https://www.udacity.com/">Udacity</a> Front-End Web Development Nanodegree program. It is built using following tools and technologies (<i class="material-icons material-inline">check</i> &ndash; required):</p>
+                <ul class="no-decor-list">
+                  <li><i class="material-icons material-inline">check</i> <a target="_blank" href="https://developers.google.com/maps/">Google Maps API</a></li>
+                  <li><i class="material-icons material-inline">check</i> <a target="_blank" href="http://knockoutjs.com/">KnockoutJS</a> framework</li>
+                  <li><a target="_blank" href="http://jquery.com/">jQuery</a> and <a target="_blank" href="http://jquerymobile.com/">jQuery Mobile</a> libraries</li>
+                  <li><a target="_blank" href="https://developers.facebook.com/">Facebook API</a></li>
+                  <li><i class="material-icons material-inline">check</i> <a target="_blank" href="http://om.yr.no/verdata/free-weather-data/">Yr.no API</a> (required as a third-party API with AJAX requests)</li>
+                  <li><a target="_blank" href="https://firebase.google.com/">Google Firebase</a> (sending messages with the contact form)</li>
+                  <li><a target="_blank" href="https://material.io/icons/">Google Material Icons</a></li>
                 </ul>
                 <h2>Acknowledgements</h2>
-                <ul>
-                  <li>The map style is based on the <a href="https://snazzymaps.com/style/83/muted-blue">Muted Blue theme by Jon Edmiston</a></li>.
-                  <li>The Coat of arms of Trondheim is by <a href="https://en.wikipedia.org/wiki/File:Trondheim_komm.svg">Wikipedia</a> user <a href="https://en.wikipedia.org/wiki/User:Mysid">Mysid</a>.</li>
-                  <li>Marker icons are generated using <a href="https://mapicons.mapsmarker.com">The Map Icons Collection</a>.</li>
-                  <li>The preloader icon is from <a href="https://preloaders.net">Preloaders.net</a>.</li>
-                  <li>Scrollbars are styled using <a href="https://css-tricks.com/examples/WebKitScrollbars/">this template</a>.</li>
+                <ul class="no-decor-list">
+                  <li>The map style is based on the <a target="_blank" href="https://snazzymaps.com/style/83/muted-blue">Muted Blue theme by Jon Edmiston</a>.</li>
+                  <li>The Coat of arms of Trondheim is by <a target="_blank" href="https://en.wikipedia.org/wiki/File:Trondheim_komm.svg">Wikipedia</a> user <a target="_blank" href="https://en.wikipedia.org/wiki/User:Mysid">Mysid</a>.</li>
+                  <li>Marker icons are generated using <a target="_blank" href="https://mapicons.mapsmarker.com">The Map Icons Collection</a>.</li>
+                  <li>The preloader icon is from <a target="_blank" href="https://preloaders.net">Preloaders.net</a>.</li>
+                  <li>Scrollbars are styled using <a target="_blank" href="https://css-tricks.com/examples/WebKitScrollbars/">this template</a>.</li>
                 </ul>
                 <h2>Disclaimer</h2>
-                <p>The main purpose of this app is to provide information about places in Trondheim, Norway. Therefore its use for other cities and regions can be limited. It contains links and pointers to external data that are provided for the user's convenience. The author does not guarantee the accuracy, relevance, timeliness or completeness of this information.</p>
-                <p>The app is created with the <a href="https://2017.trondheimdc.no/">Trondheim Developer Conference (TDC) 2017</a> in mind, but is not endorsed, authorized, approved, recommended by or affiliated with TDC.</p>
+                <p>The main purpose of this app is to provide information about places in Trondheim, Norway. Its use for other cities and regions can therefore be limited. The app contains links and pointers to external data that are provided for the user's convenience. The author does not guarantee the accuracy, relevance, timeliness or completeness of this information.</p>
+                <p>The app is created with the <a target="_blank" href="https://2017.trondheimdc.no/">Trondheim Developer Conference (TDC) 2017</a> in mind, but is not endorsed, authorized, approved, recommended by or affiliated with TDC.</p>
               </div>
             </div>
             <a href="#contact-me" data-rel="popup" data-role="button" data-transition="pop" data-position-to=".coa">Contact me</a>
@@ -197,6 +198,7 @@
                 </form>
               </div>
             </div>
+            <!-- Facebook buttons -->
             <div class="fb-like" data-href="https://ekaterina-nikonova.github.io/tdc-map/" data-width="150" data-layout="button_count" data-action="like" data-size="large" data-show-faces="false" data-share="true"></div>
           </div>
           <div class="clear-map">
@@ -204,6 +206,8 @@
           </div>
         </div>
       </div>
+      <div id="popup-msg-success" class="msg-popup"><p class="toast-text">Message sent</p></div>
+      <div id="popup-msg-fail" class="msg-popup"><p class="toast-text">Couldn't send message</p></div>
       <!-- Right side panel with lists of places -->
       <div id="right-panel">
         <div class="panel-box">
@@ -242,6 +246,22 @@
         </div>
       </div>
     </div>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+    <script>
+    // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyDMYHVCZBMIioFSkJekODiR73YLBMAWkSA",
+        authDomain: "tdc-2017-map.firebaseapp.com",
+        databaseURL: "https://tdc-2017-map.firebaseio.com",
+        projectId: "tdc-2017-map",
+        storageBucket: "",
+        messagingSenderId: "41083302772"
+      };
+      firebase.initializeApp(config);
+      var database = firebase.database();
+    </script>
+    <!-- Knockout JS, Google Maps API, Google Fonts, my scripts/stylesheets -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
     <script async defer src="js/conf-data.js"></script>
     <script async defer src="js/app.js"></script>
@@ -249,6 +269,7 @@
     src="https://maps.googleapis.com/maps/api/js?libraries=geometry,places&key=AIzaSyBrT-kgZjuDd3EOcaN8dzBXWnBCYfIFh0I&callback=initMap&language=en"></script>
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Raleway:300" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <!-- Hidden Facebook div to be appended to info windows -->
     <div id="iw-facebook" class="fb-like" data-href="#" data-width="150" data-layout="button_count" data-action="like" data-size="large" data-show-faces="false" data-share="true"></div>
   </body>
 </html>
