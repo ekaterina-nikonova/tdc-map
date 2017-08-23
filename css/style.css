@@ -315,8 +315,32 @@ iframe {
   color: #e03;
 }
 
+/* 'Contact me' popup */
+
 .ui-field-contain {
   display: flex !important;
   min-width: 30vw;
   max-width: 80vw;
+}
+
+.material-contact-icon {
+  color: #acacac;
+  margin-right: 8px;
+}
+
+.material-contact-icon:hover {
+  cursor: auto;
+  text-shadow: none;
+}
+
+.contact-input {
+  height: 100%;
+}
+
+.contact-input:valid {
+  border: 1px solid rgba(43, 177, 72, 0.3);
+}
+
+.contact-input:invalid {
+  border: 1px solid rgba(255, 34, 59, 0.3);
 }

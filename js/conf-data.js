@@ -217,11 +217,30 @@ function ViewModel() {
     });
   };
 
-  // Instructions for directions
+  // Instructions for directions in the right panel
   this.dirInstructionsHeader = ko.observable();
   this.dirInstructionsFrom = ko.observable();
   this.dirInstructionsTo = ko.observable();
   this.dirInstructions = ko.observableArray([]);
+
+  // 'Contact me' form
+  this.contactName = ko.observable('');
+  this.contactEmail = ko.observable('');
+  this.contactSubj = ko.observable('');
+  this.contactMsg = ko.observable('');
+  this.clearMsg = function() {
+    this.contactName('');
+    this.contactEmail('');
+    this.contactSubj('');
+    this.contactMsg('');
+    $('#contact-me').popup('close');
+  };
+  this.sendMsg = function() {
+
+    console.log(self.contactName() + '\n' + self.contactEmail() + '\n' + self.contactSubj() + '\n' + self.contactMsg() + '\nSent!');
+
+    self.clearMsg();
+  }
 };
 
 var myViewModel = new ViewModel();

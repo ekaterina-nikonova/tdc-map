@@ -168,31 +168,33 @@
                 <p>The app is created with the <a href="https://2017.trondheimdc.no/">Trondheim Developer Conference (TDC) 2017</a> in mind, but is not endorsed, authorized, approved, recommended by or affiliated with TDC.</p>
               </div>
             </div>
-            <a href="#contact-me" data-rel="popup" data-role="button" data-transition="pop" data-position-to="window">Contact me</a>
+            <a href="#contact-me" data-rel="popup" data-role="button" data-transition="pop" data-position-to=".coa">Contact me</a>
             <div class="popup-dialog" data-role="popup" id="contact-me">
               <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
               <div data-role="header"><h1>Send a message</h1></div>
               <div role="main" class="ui-content popup-text">
-                <div class="ui-controlgroup">
-                  <button data-icon="user"></button>
-                  <input class="ui-controlgroup-item" id="name" type="text" name="name" placeholder="Your name">
-                </div>
-                <div class="ui-field-contain">
-                  <label for="name"><i class="material-icons material-inline">account_box</i></label>
-                  <input id="name" type="text" name="name" placeholder="Your name">
-                </div>
-                <div class="ui-field-contain">
-                  <label for="email"><i class="material-icons material-inline">email</i></label>
-                  <input id="email" type="text" name="email" placeholder="Your email address">
-                </div>
-                <div class="ui-field-contain">
-                  <label for="subject"><i class="material-icons material-inline">info</i></label>
-                  <input id="subject" type="text" name="subject" placeholder="Subject">
-                </div>
-                <div class="ui-field-contain">
-                  <label for="message"><i class="material-icons material-inline">mode_edit</i></label>
-                  <textarea id="message" name="message" rows="9" cols="60" placeholder="Message&hellip;"></textarea>
-                </div>
+                <form data-bind="submit: sendMsg">
+                  <div class="ui-field-contain">
+                    <label for="name"><i class="material-icons material-inline material-contact-icon">account_box</i></label>
+                    <input id="name" class="contact-input" type="text" name="sendername" placeholder="Your name" data-bind="value: contactName" required>
+                  </div>
+                  <div class="ui-field-contain">
+                    <label for="email"><i class="material-icons material-inline material-contact-icon">email</i></label>
+                    <input id="email" class="contact-input" type="email" name="email" placeholder="Your email address" pattern=".+@.+\..+" data-bind="value: contactEmail" required>
+                  </div>
+                  <div class="ui-field-contain">
+                    <label for="subject"><i class="material-icons material-inline material-contact-icon">info</i></label>
+                    <input id="subject" class="contact-input" type="text" name="subject" placeholder="Subject" data-bind="value: contactSubj" required>
+                  </div>
+                  <div class="ui-field-contain">
+                    <label for="message"><i class="material-icons material-inline material-contact-icon">mode_edit</i></label>
+                    <textarea id="message" class="contact-input" name="message" rows="9" cols="60" placeholder="Message&hellip;" data-bind="value: contactMsg" required></textarea>
+                  </div>
+                  <div class="ui-field-contain">
+                    <button class="ui-btn ui-icon-delete ui-btn-icon-right contact-cancel-btn" data-rel="back" type="reset" data-bind="click: clearMsg">Cancel</button>
+                    <button class="ui-btn ui-icon-arrow-r ui-btn-icon-right contact-send-btn" type="submit">Send</button>
+                  </div>
+                </form>
               </div>
             </div>
             <div class="fb-like" data-href="https://ekaterina-nikonova.github.io/tdc-map/" data-width="150" data-layout="button_count" data-action="like" data-size="large" data-show-faces="false" data-share="true"></div>
