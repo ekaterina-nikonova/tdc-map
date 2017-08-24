@@ -91,7 +91,8 @@ function ViewModel() {
     {name: 'Vikåsen'}
   ]);
 
-  this.favourites = ko.observableArray([]);
+  this.favourites = ko.observableArray([]); // IDs from database
+  this.favPlaces = ko.observableArray([]); // Places for making markers
 
   this.list = ko.observableArray([]);
 
@@ -118,10 +119,6 @@ function ViewModel() {
   };
 
   this.snippet = ko.observable(); // Input field in the right panel
-
-  this.test = function() {
-    console.log();
-  };
 
   // Filter the list
   this.leaveIfContains = function() {
@@ -242,26 +239,28 @@ function ViewModel() {
       subject: self.contactSubj(),
       message: self.contactMsg()
     }).then(function() {
+      $('#popup-msg-success').css('display', 'block');
       $('#popup-msg-success').css('opacity', 1);
       setTimeout(function() {
         $('#popup-msg-success').css('opacity', 0);
+        $('#popup-msg-success').css('display', 'none');
       }, 2000);
       self.clearMsg();
     }).catch(function(error) {
       // Alter the 'Send' button instead of popup (can be covered by form)
-      $('.contact-send-btn').text('Cannot send');
-      $('.contact-send-btn').removeClass('ui-icon-arrow-right');
+      $('.contact-send-btn').text('Error!');
+      $('.contact-send-btn').removeClass('ui-icon-arrow-r');
       $('.contact-send-btn').addClass('ui-icon-alert');
       $('.contact-send-btn').css('background-color', 'rgba(255, 162, 155, 0.5)');
       setTimeout(function() {
         $('.contact-send-btn').text('Send');
         $('.contact-send-btn').removeClass('ui-icon-alert');
-        $('.contact-send-btn').addClass('ui-icon-arrow-right');
+        $('.contact-send-btn').addClass('ui-icon-arrow-r');
         $('.contact-send-btn').css('background-color', '');
       }, 2000);
       console.log('Failed: ' + error);
     });
-  }
+  };
 };
 
 var myViewModel = new ViewModel();

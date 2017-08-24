@@ -120,10 +120,6 @@ body {
   margin-right: 16px;
 }
 
-#places-list {
-  margin-top: 5px;
-}
-
 /* Show/Hide my location */
 
 .ui-controlgroup-controls {
@@ -137,6 +133,34 @@ body {
 
 #filter-only {
   margin-top: 0;
+}
+
+/* List of markers (right panel) */
+
+#places-list {
+  margin-top: 5px;
+  list-style: none;
+  padding: 0;
+}
+
+#places-list li,
+#places-list a {
+  margin: 0;
+  text-align: left;
+}
+
+#places-list li {
+  display: flex;
+}
+
+.marker-list-item {
+  width: calc(100% - 45px);
+}
+
+.add-to-fav,
+.remove-from-fav {
+  width: 45px;
+  height: 45px;
 }
 
 /* Weather forecast */
@@ -202,6 +226,14 @@ body {
 
 .forecast-icon {
   width: 48px;
+}
+
+.forecast-nav {
+  width: 36px;
+}
+
+.forecast-content {
+  width: calc(100% - 72px);
 }
 
 /* Info Window elements */
@@ -362,13 +394,12 @@ iframe {
 .msg-popup {
   border-radius: 10px;
   background-color: #aaa;
-  display: block;
+  display: none;
   position: absolute;
   bottom: 35px;
   margin-left: 50vw;
   transform: translateX(-50%);
   padding: 5px 20px;
-  visibilitys: hidden;
   opacity: 0;
   transition: opacity 1s cubic-bezier(0,1,0.5,1);
   z-index: 5000;

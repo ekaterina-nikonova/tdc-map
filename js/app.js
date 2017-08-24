@@ -1,3 +1,32 @@
+firebase.auth().signInAnonymously().catch(function(error) {
+  // Handle Errors here.
+  var errorCode = error.code;
+  var errorMessage = error.message;
+  console.log(errorCode);
+  console.log(errorMessage);
+});
+
+var appUser,
+  favs;
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    // User is signed in.
+    var isAnonymous = user.isAnonymous;
+    var uid = user.uid;
+    appUser = user;
+    favs = database.ref('users/' + uid + '/favs');
+    favs.on('value', function(snapshot) {
+      myViewModel.favourites(Object.values(snapshot.val()));
+    });
+  } else {
+    console.log('Signed out.');
+    // User is signed out.
+    // ...
+  }
+  // ...
+});
+
 // Turn Show/Hide buttons into a group, the Hide button is disabled
 $('#my-location-group').controlgroup({
   type: 'horizontal'
@@ -79,19 +108,6 @@ function initMap() {
     }
   });
 
-  // TODO: Remove if not used
-  var getPlaceDetails = function(id) {
-    var service = new google.maps.places.PlacesService(map);
-    var place = service.getDetails({placeId: id}, function(place, status) {
-      if (status === google.maps.places.PlacesServiceStatus.OK) {
-        return place;
-      } else {
-        console.log('Cannot get details for id ' + id + ' (' + status + ').');
-        return undefined;
-      }
-    });
-  };
-
   var makeInfoWindow = function(place) {
     var name = place.name ? place.name : '';
     var type = place.types ? place.types[0].replace(/_/g, ' ') : '';
@@ -163,7 +179,7 @@ function initMap() {
     });
     marker.onMap = ko.observable(); // For showing/hiding on the list
 
-    // Change appearance on hover
+    // Change marker's appearance on hover
     marker.addListener('mouseover', function() {
       marker.setAnimation(google.maps.Animation.BOUNCE);
     });
@@ -256,6 +272,40 @@ function initMap() {
       }
     };
 
+    // Add to / remove from favourites (Firebase)
+
+    marker.addToFav = function(data, event) {
+      favs.push(this.placeOnMap.place_id);
+    };
+
+    // TODO: When adding to fav, build place and add to favPlaces.
+    // TODO: When removing from favs, remove place from favPlaces. (HOW?)
+    // TODO: In showFavs, only showMarkers(favPlaces)!
+
+    marker.removeFromFav = function(data, event) {
+      var placeID = data.placeOnMap.place_id;
+      favs.once('value').then(function(snapshot) {
+        snapshot.forEach(function(child) {
+          if (child.val() === placeID) {
+            favs.ref.child(child.key).remove();
+          }
+        });
+      });
+    };
+
+    // TODO: Remove if not used
+    var getPlaceDetails = function(id) {
+      var service = new google.maps.places.PlacesService(map);
+      var place = service.getDetails({placeId: id}, function(place, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          return place;
+        } else {
+          console.log('Cannot get details for id ' + id + ' (' + status + ').');
+          return undefined;
+        }
+      });
+    };
+
     marker.clickOnMarker = function() {
       makeInfoWindow(place);
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
@@ -308,6 +358,25 @@ function initMap() {
     return marker;
   };
 
+  // Show favourites
+
+  var favPlaces = [];
+  $('#show-favourites').click(function() {
+    clearMap();
+    myViewModel.favourites().forEach(function(id) {
+      var service = new google.maps.places.PlacesService(map);
+      var place = service.getDetails({placeId: id}, function(place, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          console.log('Ok!');
+          favPlaces.push(place);
+        }
+      })
+    });
+    console.log(favPlaces);
+    showMarkers(favPlaces);
+  });
+
+
   var clearMap = function() {
     myViewModel.markersOnMap().forEach(function(marker) {
       marker.setMap(null);
@@ -324,7 +393,8 @@ function initMap() {
     myViewModel.dirInstructionsTo('');
   };
 
-  // Showing initial markers on the map
+  // Showing markers on map, adding them to ViewModel arrays for tracking
+
   var showMarkers = function(places) {
     var bounds = new google.maps.LatLngBounds();
     // If there are no markers to display, the map still covers the senter of Trondheim
@@ -347,6 +417,7 @@ function initMap() {
     }
   };
 
+  // Showing initial markers on the map
   showMarkers(myViewModel.confPlaces());
 
   $('#show').click(function() {

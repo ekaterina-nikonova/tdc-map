@@ -12,13 +12,15 @@
   <body>
     <!-- Load and initialize Facebook SDK -->
     <div id="fb-root"></div>
-    <script>(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.10&appId=370042566748564";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
+    <script>
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.10&appId=370042566748564";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
 
     <div data-role="page">
       <!-- The map with a menu button overlay -->
@@ -55,7 +57,7 @@
                   <p data-bind="text: forecast.conditions"></p>
                   <p data-bind="text: forecast.wind"></p>
                 </div>
-                <div class="forecast-arrow">
+                <div class="forecast-nav">
                   <i class="material-icons arrow forecast-nav-icons arrow-next">keyboard_arrow_right</i>
                 </div>
               </div>
@@ -64,10 +66,10 @@
               </div>
             </div>
           </div>
-          <!-- "Date of the event" section -->
+          <!-- "Show places" section -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
             <h4>Show places</h4>
-            <input id="show" type="button" value="Day of the event">
+            <a href="#" id="show" class="ui-btn ui-icon-location ui-btn-icon-right">Day of the event</a>
             <label for="find-more-places">Find more places:</label>
             <input id="find-more-places" type="search" placeholder="e.g. cafe or hotel">
             <fieldset>
@@ -77,8 +79,9 @@
                 <a href="#" class="ui-btn my-location-btn" id="my-location-hide">Hide</a>
               </div>
             </fieldset>
+            <a href="#" id="show-favourites" class="ui-btn ui-icon-star ui-btn-icon-right">My favourites</a>
           </div>
-          <!-- About section -->
+          <!-- "About" section -->
           <div data-role="collapsible" data-inset="false" data-collapsed-icon="carat-d" data-expanded-icon="carat-u">
             <h4>About</h4>
             <a href="#how-to-use" data-rel="popup" data-role="button" data-transition="pop" data-position-to="window">How to use</a>
@@ -202,12 +205,11 @@
             <div class="fb-like" data-href="https://ekaterina-nikonova.github.io/tdc-map/" data-width="150" data-layout="button_count" data-action="like" data-size="large" data-show-faces="false" data-share="true"></div>
           </div>
           <div class="clear-map">
-            <input id="clear-map-btn" type="button" value="Clear the map">
+            <a href="#" id="clear-map-btn" class="ui-btn ui-icon-delete ui-btn-icon-right">Clear the map</a>
           </div>
         </div>
       </div>
       <div id="popup-msg-success" class="msg-popup"><p class="toast-text">Message sent</p></div>
-      <div id="popup-msg-fail" class="msg-popup"><p class="toast-text">Couldn't send message</p></div>
       <!-- Right side panel with lists of places -->
       <div id="right-panel">
         <div class="panel-box">
@@ -230,17 +232,22 @@
             <input id="list-filter" type="search" data-bind="textInput: snippet" placeholder="Enter text">
           </div>
           <!-- List of markers on the map -->
-          <ul id="places-list" data-role="listview" data-bind="foreach: {data: markersOnMap, as: 'marker'}">
+          <ul id="places-list" data-bind="foreach: {data: markersOnMap, as: 'marker'}">
             <li data-bind="if: marker.onMap()">
-              <a href="#" data-bind="
+              <a href="#" class="marker-list-item ui-btn" data-bind="
                 text: marker.placeOnMap.name,
                 event: {
                   mouseover: function() {marker.setAnimation(google.maps.Animation.BOUNCE);},
                   mouseout: function() {marker.setAnimation(null);},
                   click: function() {marker.clickOnMarker();}
                 }"></a>
-              <!-- TODO: Change icon into heart when in favourites -->
-              <a href="#" class="ui-icon-plus ui-btn-icon-right"></a>
+              <!-- Plus icon becomes heart when place is in favourites -->
+              <div class="fav-container" data-bind="ifnot: $parent.favourites().includes(marker.placeOnMap.place_id)">
+                <a href="#" data-bind="click: function(data, event) {marker.addToFav(data, event);}, attr: {id: marker.placeOnMap.place_id}" class="ui-btn ui-icon-plus ui-btn-icon-notext add-to-fav"></a>
+              </div>
+              <div class="fav-container" data-bind="if: $parent.favourites().includes(marker.placeOnMap.place_id)">
+                <a href="#" data-bind="click: function(data, event) {marker.removeFromFav(data, event);}, attr: {id: marker.placeOnMap.place_id}" class="ui-btn ui-icon-heart ui-btn-icon-notext remove-from-fav"></a>
+              </div>
             </li>
           </ul>
         </div>
