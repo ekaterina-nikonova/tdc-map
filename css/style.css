@@ -361,6 +361,10 @@ iframe {
   vertical-align: text-bottom;
 }
 
+.btn-inline-block {
+  display: inline-block;
+}
+
 /* 'Contact me' popup */
 
 .ui-field-contain {

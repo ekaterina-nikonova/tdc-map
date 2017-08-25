@@ -91,8 +91,8 @@ function ViewModel() {
     {name: 'Vikåsen'}
   ]);
 
-  this.favourites = ko.observableArray([]); // IDs from database
-  this.favPlaces = ko.observableArray([]); // Places for making markers
+  this.favourites = ko.observableArray([]); // Array of favourite places
+  this.favIds = ko.observableArray([]); // IDs of favourite places
 
   this.list = ko.observableArray([]);
 
@@ -247,7 +247,7 @@ function ViewModel() {
       }, 2000);
       self.clearMsg();
     }).catch(function(error) {
-      // Alter the 'Send' button instead of popup (can be covered by form)
+      // Change the 'Send' button (popup can be covered by the form)
       $('.contact-send-btn').text('Error!');
       $('.contact-send-btn').removeClass('ui-icon-arrow-r');
       $('.contact-send-btn').addClass('ui-icon-alert');
@@ -258,9 +258,19 @@ function ViewModel() {
         $('.contact-send-btn').addClass('ui-icon-arrow-r');
         $('.contact-send-btn').css('background-color', '');
       }, 2000);
-      console.log('Failed: ' + error);
+      console.log('Failed to send message: ' + error);
     });
   };
+
+  // No favourites found
+  this.noFavs = function() {
+    $('#popup-no-favs').css('display', 'block');
+    $('#popup-no-favs').css('opacity', 1);
+    setTimeout(function() {
+      $('#popup-no-favs').css('opacity', 0);
+      $('#popup-no-favs').css('display', 'none');
+    }, 2000);
+  }
 };
 
 var myViewModel = new ViewModel();
