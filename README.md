@@ -1,53 +1,32 @@
-# Features
-* Initial array of markers:
- - [ ] Clarion
- - [ ] Train station
- - [ ] Bus station
- - [ ] Godt brød
- - [ ] Starbucks
- - [ ] Baker'n på Torget (Rosenborg bakeri)
- - [ ] Café le Frère
-* Search for places:
- - 5/15/30 minutes walk/transit from where-i-am
- - open now
- - rated 4+
- - in a district (zoom-to-area):
-    * Sentrum
-    * Tyholt
-    * Byåsen
-    * Trolla
-    * Ila
-    * Møllenberg
-    * Nedre Elvehavn
-    * Lade
-    * Strindheim
-    * Jakobsli
-    * Vikåsen
-    * Ranheim
-    * Lerkendal
-    * Nardo
-    * Flatåsen
-    * Moholt
-    * Heimdal
-    * Byneset
-    * Tiller
-    * Kolstad
-    * Saupstad
-    * Kattem
-* Info window:
- - panorama
- - panorama replaced with place photos
- - show directions
+# Overview
+This app provides information about places in Trondheim, Norway. The initial set of markers is made with the [Trondheim Developer Conference](https://2017.trondheimdc.no/) in mind. It can be used as a general purpose map app, but is still related to Trondheim (if no places are found, for example, the viewport will return to the city centre.)
 
-* Third-side API
- - share/like on Facebook
- - login with Google (for Firebase :question:)
- - weather forecast from Yr
+It is hosted on GitHub and is available [here](ekaterina-nikonova.github.io/tdc-map/).
 
-# Acknowledgements
-* The map style is based on the [Muted Blue theme by Jon Edmiston](https://snazzymaps.com/style/83/muted-blue).
-* The Coat of arms of Trondheim is by [Wikipedia](https://en.wikipedia.org/wiki/File:Trondheim_komm.svg) user [Mysid](https://en.wikipedia.org/wiki/User:Mysid).
-* Icons are generated with [The Map Icons Collection](https://mapicons.mapsmarker.com).
-* The preloader icon is from [Preloaders.net](https://preloaders.net).
-* Scrollbars are styled using [this template](https://css-tricks.com/examples/WebKitScrollbars/).
-* Weather forecast from [Yr.no](http://yr.no).
+# Tools
+
+The app is mostly based on Google Maps API, jQuery, KnockoutJS. The full list of tools and technologies can be found in the app description: open left side panel > **About > About the app**. Instructions for users are provided in **About > How to use**.
+
+## Third-party APIs
+The APIs used in the app are:
+ - **Yr.no** - weather forecast in the left side panel.
+ - **Facebook** - _Share_ and _Like_ buttons for the app in the left side panel.
+ - **Facebook** - _Share_ and _Like_ buttons for places in the info window.
+
+## Google Firebase
+Google Firebase is used for receiving messages sent from the contact form (open left panel > **About > Contact me**). Sending messages does not require authentication.
+
+Firebase is also used for storing the list of favourite places. Anonymous guest accounts are used for this, so that the user does not need to do anything to sign in.
+
+# Udacity requirements
+
+The marker list is located in the right side panel.
+
+The marker's opacity changes when the marker or the corresponding list item in the right panel is clicked. To restore the opacity, click the map.
+
+The initial locations are hard-coded in the _conf-data.js_ file. Using the Place Details service seemed to be risky, because the _getDetails()_ method often returns the **query limit** error when used in a cycle.
+
+# Tips
+ - To test the **Directions** feature in the info window, overriding geolocation in the browser can be useful. For example, with coordinates of the Trondheim central train station (63.436598, 10.398436), step-by-step instructions for walking or bicycling will not be overwhelming.
+
+ - Please note that **My location** marker is a special one: it is not present in the list in the right panel, cannot be marked as favourite and is not affected by such actions as clearing the map, filtering or search.

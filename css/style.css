@@ -353,12 +353,12 @@ iframe {
 
 #about-the-app a {
   text-decoration: none;
-  vertical-align: text-bottom;
+  vertical-align: baseline;
   font-weight: normal !important;
 }
 
 #how-to-use strong {
-  vertical-align: text-bottom;
+  vertical-align: baseline;
 }
 
 .btn-inline-block {
@@ -400,7 +400,7 @@ iframe {
   background-color: #aaa;
   display: none;
   position: absolute;
-  bottom: 35px;
+  bottom: 48px;
   margin-left: 50vw;
   transform: translateX(-50%);
   padding: 5px 20px;

@@ -304,6 +304,7 @@ function initMap() {
 
     // Show info window after a click on a marker
     marker.clickOnMarker = function() {
+      marker.setOpacity(0.5);
       makeInfoWindow(place);
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       iw.open(map, marker);
@@ -345,7 +346,10 @@ function initMap() {
         }
       });
 
-      map.addListener('click', function() {iw.close();});
+      map.addListener('click', function() {
+        iw.close();
+        marker.setOpacity(1);
+      });
       $('#iw-pano-photos-btn').click(function() {
         marker.pic === 'panorama' ? showPhotos(marker) : showPanorama(panoOptions, marker);
       });
@@ -372,7 +376,6 @@ function initMap() {
     });
     myViewModel.markersOnMap.removeAll();
     myViewModel.markersOnMapIds.removeAll();
-    myViewModel.markersOnMapPlaces.removeAll();
     morePlaces = false;
     route.setMap(null);
     myViewModel.dirInstructions.removeAll();
@@ -393,7 +396,6 @@ function initMap() {
       var placeId = place.place_id;
       var marker = makeMarker(place);
       myViewModel.markersOnMap.push(marker);
-      myViewModel.markersOnMapPlaces.push({place});
       marker.setMap(map);
       marker.onMap(true);
       bounds.extend(marker.position);
@@ -415,7 +417,7 @@ function initMap() {
 
   // Find more places
   var mapBounds;
-  // The user will have to repeat search every time the map is zoomed or panned. The way Search Box handles bounds is too unpredictable for automatic search.
+  // The user will have to repeat search every time the map is zoomed or panned. The way Search Box handles bounds is too unpredictable for automatic search. Uncomment the line below to check its behaviour.
   map.addListener('bounds_changed', function() {
     mapBounds = map.getBounds();
     // if (morePlaces) findMorePlaces();

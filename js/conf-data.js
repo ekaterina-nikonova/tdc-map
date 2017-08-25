@@ -61,40 +61,11 @@ function ViewModel() {
     }
   ]);
 
-  this.markersOnMap = ko.observableArray([]);
+  this.markersOnMap = ko.observableArray([]); // Tracking for right panel list
   this.markersOnMapIds = ko.observableArray([]);
-  this.markersOnMapPlaces = ko.observableArray([]);
 
-  // Districts of Trondheim
-  this.neighbourhoods = ko.observableArray([
-    {name: 'Byneset'},
-    {name: 'Byåsen'},
-    {name: 'Flatåsen'},
-    {name: 'Heimdal'},
-    {name: 'Ila'},
-    {name: 'Jakobsli'},
-    {name: 'Kattem'},
-    {name: 'Kolstad'},
-    {name: 'Lade'},
-    {name: 'Lerkendal'},
-    {name: 'Moholt'},
-    {name: 'Møllenberg'},
-    {name: 'Nardo'},
-    {name: 'Nedre Elvehavn'},
-    {name: 'Ranheim'},
-    {name: 'Saupstad'},
-    {name: 'Sentrum'},
-    {name: 'Strindheim'},
-    {name: 'Tiller'},
-    {name: 'Trolla'},
-    {name: 'Tyholt'},
-    {name: 'Vikåsen'}
-  ]);
-
-  this.favourites = ko.observableArray([]); // Array of favourite places
+  this.favourites = ko.observableArray([]); // Favourite places
   this.favIds = ko.observableArray([]); // IDs of favourite places
-
-  this.list = ko.observableArray([]);
 
   this.openLeftPanel = function() {
     var panel = $('#left-panel');
@@ -211,10 +182,10 @@ function ViewModel() {
         fcNum = 0;
         appendForecast(fcNum);
       });
-    });
+    }); // No need to fail(): the forecast won't appear if the request fails
   };
 
-  // Instructions for directions in the right panel
+  // Showing directions step-by-step in the right panel
   this.dirInstructionsHeader = ko.observable();
   this.dirInstructionsFrom = ko.observable();
   this.dirInstructionsTo = ko.observable();
