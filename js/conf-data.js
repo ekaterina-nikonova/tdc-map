@@ -61,8 +61,8 @@ function ViewModel() {
     }
   ]);
 
-  this.markersOnMap = ko.observableArray([]); // Tracking for right panel list
-  this.markersOnMapIds = ko.observableArray([]);
+  // To be displayed in the right side panel
+  this.markersOnMap = ko.observableArray([]);
 
   this.favourites = ko.observableArray([]); // Favourite places
   this.favIds = ko.observableArray([]); // IDs of favourite places
@@ -122,22 +122,23 @@ function ViewModel() {
       forecasts.forEach(function(forecast) {
         // console.log(forecast); // Uncomment this line to see the structure of each forecast or open the link https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml to see the whole XML file.
         var months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        var fc = {};
+        var time,
+          fc = {};
         switch (forecast.getAttribute('period')) {
           case '0':
-          var time = 'night';
+          time = 'night';
           break;
           case '1':
-          var time = 'morning';
+          time = 'morning';
           break;
           case '2':
-          var time = 'day';
+          time = 'day';
           break;
           case '3':
-          var time = 'evening';
+          time = 'evening';
           break;
           default:
-          var time = 'all day';
+          time = 'all day';
         }
         fc.date = forecast.getAttribute('from').split('T')[0].split('-')[2] +
           ' ' + months[parseInt(forecast.getAttribute('from').split('T')[0].split('-')[1], 10)] + ', ' + time;
@@ -241,8 +242,8 @@ function ViewModel() {
       $('#popup-no-favs').css('opacity', 0);
       $('#popup-no-favs').css('display', 'none');
     }, 2000);
-  }
-};
+  };
+}
 
 var myViewModel = new ViewModel();
 ko.applyBindings(myViewModel);

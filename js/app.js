@@ -10,7 +10,6 @@ var favs; // To refer to favourites stored in the database
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
-    var isAnonymous = user.isAnonymous;
     var uid = user.uid;
     favs = database.ref('users/' + uid + '/favs');
     // Update myViewModel.favourites() when 'database/users/ui/favs' changes
@@ -172,7 +171,7 @@ function initMap() {
           break;
         default:
           icon = 'img/default.png';
-      };
+      }
     }
     var marker = new google.maps.Marker({
       position: place.geometry.location,
@@ -208,16 +207,16 @@ function initMap() {
         };
         showPanorama(panoOptions, marker);
       } else document.getElementById('iw-panorama').appendChild(document.createTextNode('Cannot show panorama.'));
-    };
+    }
 
     var showPanorama = function(panoOptions, marker) {
       $('#iw-panorama').empty();
       $('#iw-pano-photos-btn').attr('value', 'Show photos');
       marker.pic = 'panorama'; // Toggle panorama/photos indicator
-      var panorama = new google.maps.StreetViewPanorama(
+      new google.maps.StreetViewPanorama(
         document.getElementById('iw-panorama'), panoOptions
       );
-    }
+    };
 
     // Photos in the info window
     var showPhotos = function(marker) {
@@ -317,13 +316,13 @@ function initMap() {
               lat: position.coords.latitude,
               lng: position.coords.longitude
             };
-            var directionsService = new google.maps.DirectionsService;
+            var directionsService = new google.maps.DirectionsService();
             directionsService.route({
               origin: origin,
               destination: place.geometry.location,
               travelMode: $('#iw-directions-mode').val()
             }, function(response, status) {
-              if (status = google.maps.DirectionsStatus.OK) {
+              if (status === google.maps.DirectionsStatus.OK) {
                 clearMap();
                 route.setMap(map);
                 route.setDirections(response);
@@ -351,9 +350,11 @@ function initMap() {
         marker.setOpacity(1);
       });
       $('#iw-pano-photos-btn').click(function() {
-        marker.pic === 'panorama' ? showPhotos(marker) : showPanorama(panoOptions, marker);
+        if (marker.pic === 'panorama') {
+          showPhotos(marker);
+        } else showPanorama(panoOptions, marker);
       });
-    }
+    };
 
     marker.addListener('click', function() {this.clickOnMarker();});
     return marker;
@@ -375,7 +376,6 @@ function initMap() {
       marker.onMap(false);
     });
     myViewModel.markersOnMap.removeAll();
-    myViewModel.markersOnMapIds.removeAll();
     morePlaces = false;
     route.setMap(null);
     myViewModel.dirInstructions.removeAll();
@@ -393,7 +393,6 @@ function initMap() {
       bounds.extend(myViewModel.confPlaces()[6].geometry.location);
     }
     places.forEach(function(place) {
-      var placeId = place.place_id;
       var marker = makeMarker(place);
       myViewModel.markersOnMap.push(marker);
       marker.setMap(map);
@@ -481,7 +480,7 @@ function initMap() {
           place_id: '',
           formatted_address: ''
         };
-        var geocoder = new google.maps.Geocoder;
+        var geocoder = new google.maps.Geocoder();
         geocoder.geocode({location: myLocation}, function(results, status) {
           if (status === google.maps.GeocoderStatus.OK) {
             if (results[0]) {
@@ -499,7 +498,7 @@ function initMap() {
         $('#my-location-hide').click(function() {
           markerCurrentPlace.setMap(null);
           $('#my-location-hide').addClass('ui-state-disabled');
-        })
+        });
       }, geocoderError);
     } else {
       // If geolocation isn't supported, the position of the sentral station is used as a default location and the user is alerted
@@ -507,4 +506,4 @@ function initMap() {
       alert('Geolocation is not supported.');
     }
   });
-};
+}
