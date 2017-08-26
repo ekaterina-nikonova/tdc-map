@@ -1,5 +1,5 @@
 # Overview
-This app provides information about places in Trondheim, Norway. The initial set of markers is made with the [Trondheim Developer Conference](https://2017.trondheimdc.no/) in mind. It can be used as a general purpose map app, but is still related to Trondheim (if no places are found, for example, the viewport will return to the city centre.)
+This app provides information about places in Trondheim, Norway. The initial set of markers is made with the [Trondheim Developer Conference](https://2017.trondheimdc.no/) in mind. It can be used as a general purpose map app, but is still related to Trondheim (for example, the viewport will return to the city centre if no places are found.)
 
 It is hosted on GitHub and is available [here](ekaterina-nikonova.github.io/tdc-map/).
 
@@ -24,7 +24,7 @@ The marker list is located in the right side panel.
 
 The marker's opacity changes when the marker or the corresponding list item in the right panel is clicked. To restore the opacity, click the map.
 
-The initial locations are hard-coded in the _conf-data.js_ file. Using the Place Details service seemed to be risky, because the _getDetails()_ method often returns the **query limit** error when used in a cycle.
+The initial locations are hard-coded in the _conf-data.js_ file. Using the Place Details service here seemed to be risky, because the _getDetails()_ method often returns the **query limit** error when used in a loop.
 
 # Tips
  - To test the **Directions** feature in the info window, overriding geolocation in the browser can be useful. For example, with coordinates of the Trondheim central train station (63.436598, 10.398436), step-by-step instructions for walking or bicycling will not be overwhelming.
