@@ -1,7 +1,16 @@
 # Overview
 This app provides information about places in Trondheim, Norway. The initial set of markers is made with the [Trondheim Developer Conference](https://2017.trondheimdc.no/) in mind. It can be used as a general purpose map app, but is still related to Trondheim (for example, the viewport will return to the city centre if no places are found.)
 
-It is hosted on GitHub and is available at [ekaterina-nikonova.github.io/tdc-map/](https://ekaterina-nikonova.github.io/tdc-map/).
+<!-- It is hosted on GitHub and is available at [ekaterina-nikonova.github.io/tdc-map/](https://ekaterina-nikonova.github.io/tdc-map/). -->
+
+# Running the app on a local server with npm
+1. With **NodeJS** and **npm** installed<sup>\*</sup>, install **http-server**.<sup>\*\*</sup>
+2. In the **NodeJS command prompt**, run the server by typing `http-server [path]`, where _path_ is the path to the directory where you store the app's code (where the _index.html_ file is located).
+3. Open the app in the browser by typing `localhost:8080` in the address bar.
+
+<sup>\*</sup> Instructions on how to install **NodeJS** and **npm**, are available [here](https://www.npmjs.com/get-npm).
+
+<sup>\*\*</sup> To install **http-server**, use the command `npm install http-server -g`. Detailed instructions are available [here](https://www.npmjs.com/package/http-server).
 
 # Tools
 
