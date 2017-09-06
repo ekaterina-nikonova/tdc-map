@@ -90,24 +90,11 @@ function initMap() {
     var type = place.types ? place.types[0].replace(/_/g, ' ') : '';
     var address = place.formatted_address ? place.formatted_address : '';
     var notes = place.notes ? place.notes : '';
-    iw.maxWidth = window.innerWidth;
-    // Facebook like/share button in info window - only if the place has a website. Inner HTML of the FB plugin which is located in the end of the page body. 'data-href' is replaced by the website URL, the buttons are rebuilt and appended to the info window.
-    var service = new google.maps.places.PlacesService(map);
-    service.getDetails({placeId: place.place_id}, function(place, status) {
-      if (status === google.maps.places.PlacesServiceStatus.OK && place.website) {
-        console.log(place.website);
-        $('#iw-facebook').attr('data-href', place.website);
-        FB.XFBML.parse();
-        $('.iw-pano-photos-share').append($('#iw-facebook').html());
-      }
-    });
+    iw.maxWidth = (window.innerWidth * 0.8).toFixed();
     iw.setContent(
       '<article><h1 class=\"iw-place-name\">' + name + '</h1>' +
       '<h2 class=\"iw-place-type\"> &ndash; ' + type + '</h2>' +
       '<div class=\"iw-place-address\">' + address + '</div>' +
-      '<div class=\"iw-pano-photos-share\">' +
-      '<input id=\"iw-pano-photos-btn\" type=\"button\" value=\"Show photos\">' +
-      '</div><div id=\"iw-panorama\"></div>' +
       '<div id=\"iw-notes\">' + notes + '</div>' +
       '<section class=\"iw-directions\"><input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">' +
       '<label for=\"iw-directions-mode\">Travel mode:</label>' +
@@ -156,7 +143,6 @@ function initMap() {
       animation: google.maps.Animation.DROP,
       icon: icon,
       opacity: 0.7,
-      pic: 'panorama',
       placeOnMap: place // For linking the list of places to markers
     });
     marker.onMap = ko.observable(); // For showing/hiding on the list
@@ -173,91 +159,6 @@ function initMap() {
     marker.addListener('mouseout', function() {
       marker.setAnimation('none');
     });
-
-    // StreetView in the info window
-    var streetViewService = new google.maps.StreetViewService();
-    var radius = 50;
-    var panoOptions;
-    function getStreetView(data, status) {
-      if (status === google.maps.StreetViewStatus.OK) {
-        var heading = google.maps.geometry.spherical.computeHeading(data.location.latLng, marker.position);
-        panoOptions = {
-          position: data.location.latLng,
-          pov: {
-            heading: heading,
-            pitch: 0
-          }
-        };
-        showPanorama(panoOptions, marker);
-      } else document.getElementById('iw-panorama').appendChild(document.createTextNode('Cannot show panorama.'));
-    }
-
-    var showPanorama = function(panoOptions, marker) {
-      $('#iw-panorama').empty();
-      $('#iw-pano-photos-btn').attr('value', 'Show photos');
-      marker.pic = 'panorama'; // Toggle panorama/photos indicator
-      new google.maps.StreetViewPanorama(
-        document.getElementById('iw-panorama'), panoOptions
-      );
-    };
-
-    // Photos in the info window
-    var showPhotos = function(marker) {
-      $('#iw-panorama').empty();
-      $('#iw-pano-photos-btn').attr('value', 'Show panorama');
-      marker.pic = 'photos'; // Toggle panorama/photos indicator
-
-      function displayPhoto(place, photoNum, photos) {
-        $('.iw-photo-container').append('<img src=\"img/preloader.svg\" class=\"iw-preloader\">');
-        var img = document.createElement('IMG');
-        var imgUrl = photos[photoNum].getUrl({maxWidth: 800, maxHeight: 600});
-        img.setAttribute('src', imgUrl);
-        img.setAttribute('class', 'iw-photo');
-        img.addEventListener('load', function(event) {
-          $('.iw-photo-container').empty();
-          $('.iw-photo-comment').append('<p>Photo ' +
-          (photoNum + 1) + '\/' + photos.length +
-          (photos.length > 1 ? ' - click or swipe to view next' : '' +
-          '</p>'));
-          $('.iw-photo-container').append(img);
-        });
-      }
-
-      var service = new google.maps.places.PlacesService(map);
-      service.getDetails({placeId: place.place_id}, getPhotos);
-      function getPhotos(place, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
-          var photos = place.photos;
-          if (!photos) {
-            $('#iw-panorama').append('<p>No photos found.</p>');
-          } else {
-            // Display the 1st photo
-            var photoNum = 0;
-            displayPhoto(place, photoNum, photos);
-            $('#iw-panorama').append('<div class=\"iw-photo-comment\"></div>' + '<div class=\"iw-photo-container\"></div>');
-            var nextPhoto = function() {
-              // Update the photo and the count. After the last photo, start over.
-              $('.iw-photo-container').empty();
-              $('.iw-photo-comment').empty();
-              photoNum = photoNum === photos.length - 1 ? 0 : photoNum + 1;
-              displayPhoto(place, photoNum, photos);
-            };
-            var prevPhoto = function() {
-              // Update the photo and the count. After the first photo, go to the last one.
-              $('.iw-photo-container').empty();
-              $('.iw-photo-comment').empty();
-              photoNum = photoNum === 0 ? photos.length - 1 : photoNum - 1;
-              displayPhoto(place, photoNum, photos);
-            };
-            $('.iw-photo-container').click(nextPhoto);
-            $('.iw-photo-container').on('swipeleft', nextPhoto);
-            $('.iw-photo-container').on('swiperight', prevPhoto);
-          }
-        } else {
-          $('#iw-panorama').append('<p>Couldn\'t find photos.</p>');
-        }
-      }
-    };
 
     // Add to / remove from favourites (Firebase)
     marker.addToFav = function(data, event) {
@@ -290,7 +191,6 @@ function initMap() {
       activeMarker = marker;
       marker.setOpacity(1);
       makeInfoWindow(place);
-      streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       iw.open(map, marker);
 
       // 'Show directions' button
@@ -348,6 +248,7 @@ function initMap() {
             locality = '',
             postcode = '',
             request;
+            console.log(result[0]);
           result[0].address_components.forEach(function(component) {
             component.types.forEach(function(type) {
               if (type === 'country') {

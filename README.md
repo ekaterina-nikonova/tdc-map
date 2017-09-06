@@ -53,3 +53,4 @@ The initial locations are hard-coded in the _conf-data.js_ file. Using the Place
  - **KnockoutJS bindings instead of jQuery/JS DOM methods for**:
   * Opening/closing side panels
   * Weather forecast display (visibility, next/previous/reset)
+ - **Panorama/Photos and Facebook buttons removed from info window**.

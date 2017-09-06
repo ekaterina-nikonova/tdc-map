@@ -127,9 +127,7 @@
                 <h2>Info window</h2>
                 <p>Click on a marker, and an info window will open. In addition to the name of the place, it can contain:</p>
                 <ul>
-                  <li>a panorama of the sctreet or interior and photos of the place, if available,</li>
-                  <li>Facebook <strong>Like</strong> and <strong>Share</strong> buttons, if the place has a website listed on Google Maps,</li>
-                  <li>address and notes, and</li>
+                  <li>address and notes, if available,</li>
                   <li>tools for getting directions from your location.</li>
                 </ul>
                 <h2>Show directions</h2>
@@ -140,6 +138,7 @@
                 <h3>Left panel</h3>
                 <p>The left panel contains weather forecast, tools for displaying places on the map, and the <strong>About</strong> section with additional information and the contact form. The <strong>Clear the map</strong> button removes all markers from the map and clears the right panel.</p>
                 <h4>Weather forecast</h4>
+                <p>When you first open the app, in the left panel you can find weather forecast for Trondheim city centre. When you click a marker, the forecast is updated depending on the marker's position. For places in Norway, you can see the detailed weather data based on places' postal codes. For other countries or if the postal code cannot be found, a link to <a  target="_blank" href="https://yr.no">Yr.no</a> is displayed instead of a forecast.</p>
                 <p>Use the arrows <i class="material-icons material-inline">keyboard_arrow_left</i> and <i class="material-icons material-inline">keyboard_arrow_right</i> to view weather forecast for the previous and the next period. The <i class="material-icons material-inline">refresh</i> icon resets the forecast.</p>
                 <h4>Show places</h4>
                 <p>The <strong>Day of the event</strong> button returns the map to the initial state and shows the selected markers described above, in the <strong>Initial screen</strong> section.</p>
@@ -289,8 +288,7 @@
         </div>
       </nav>
     </div>
-    <!-- Hidden Facebook div to be appended to info windows -->
-    <div id="iw-facebook" class="fb-like" data-href="#" data-width="150" data-layout="button_count" data-action="like" data-size="large" data-show-faces="false" data-share="true"></div>
+
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
     <!-- Knockout JS, Google Maps API, Google Fonts, my scripts/stylesheets -->
