@@ -16,7 +16,7 @@
       var errorCode = error.code;
       var errorMessage = error.message;
       myViewModel.noSignInPopup();
-      myViewModel.signinStatus('Sign-in error ' + errorCode + ': ' + errorMessage)
+      myViewModel.signinStatus('Sign-in error ' + errorCode + ': ' + errorMessage);
     });
 
     var favs; // To refer to favourites stored in the database
@@ -69,7 +69,7 @@ function initMap() {
 
   $.ajax({
     url: 'js/map-styles.js'
-  }).done(function() {map.setOptions({styles: mapStyles})});
+  }).done(function() {map.setOptions({styles: mapStyles});});
 
   // Side panel controls are hidden when the full-size Street View is active, so that they do not cover the SV controls.
   map.getStreetView().addListener('visible_changed', function() {
@@ -233,11 +233,6 @@ function initMap() {
       map.addListener('click', function() {
         iw.close();
       });
-      $('#iw-pano-photos-btn').click(function() {
-        if (marker.pic === 'panorama') {
-          showPhotos(marker);
-        } else showPanorama(panoOptions, marker);
-      });
 
       // Update the weather forecast
       var geocoder = new google.maps.Geocoder();
@@ -272,7 +267,7 @@ function initMap() {
             request.url = 'https://www.yr.no/soek/soek.aspx?sted=' + locality + '&land=' + country + '&sok=Search';
             myViewModel.forecastFallback(request);
           }
-        } else {myViewModel.forecastFallback({url: 'https://www.yr.no'})}
+        } else {myViewModel.forecastFallback({url: 'https://www.yr.no'});}
       });
     };
 

@@ -44,4 +44,4 @@ var mapStyles = [
     "elementType": "fill",
     "stylers": [{ "hue": "#00ff33" }]
   }
-]
+];

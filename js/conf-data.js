@@ -5,7 +5,7 @@ function ViewModel() {
   this.mapError = function() {
     self.mapLoaded(false);
     return 'Couldn\'t load the map. Try to reload the page. Alternatively, you can also use maps.google.com or Maps app.';
-  }
+  };
 
 
   // Places for the initial array of markers
