@@ -1,12 +1,20 @@
 function ViewModel() {
   var self = this;
+
+  this.mapLoaded = ko.observable(true);
+  this.mapError = function() {
+    self.mapLoaded(false);
+    return 'Couldn\'t load the map. Try to reload the page. Alternatively, you can also use maps.google.com or Maps app.';
+  }
+
+
   // Places for the initial array of markers
   this.confPlaces = ko.observableArray([
     { // Clarion Hotel & Congress
       name: 'Clarion Hotel & Congress',
       types: ['venue'],
       formatted_address: 'Brattørkaia 1, 7010 Trondheim, Norway',
-      geometry: {location: {lat: 63.44002739999999, lng: 10.4024274}},
+      geometry: {location: {lat: 63.4400274, lng: 10.4024274}},
       place_id: 'ChIJq3jrGHYxbUYRWCokKUAb-00',
       notes: 'The Conference venue: Monday 30 October at 9:00–18:00'
     },
@@ -14,7 +22,7 @@ function ViewModel() {
       name: 'Trondheim Sentralstasjon',
       types: ['train_station'],
       formatted_address: 'Fosenkaia 1, 7010 Trondheim',
-      geometry: {location: {lat: 63.43669999999999, lng: 10.3988199}},
+      geometry: {location: {lat: 63.4367, lng: 10.3988199}},
       place_id: 'ChIJ8QoyqZ0xbUYRzsViX0zp1e8',
       notes: 'Trains from Værnes airport arrive at 6:32, 6:53, 7:32, 7:47, 8:00 and 8:32'
     },
@@ -39,7 +47,7 @@ function ViewModel() {
       name: 'Starbucks',
       types: ['Cafe'],
       formatted_address: 'Kongens gate 14B',
-      geometry: {location: {lat: 63.43060060000001, lng: 10.3970648}},
+      geometry: {location: {lat: 63.4306006, lng: 10.3970648}},
       place_id: 'ChIJWwkjs5sxbUYRQfhT0Rg143o',
       notes: 'Opens at 7:00'
     },
@@ -61,40 +69,27 @@ function ViewModel() {
     }
   ]);
 
-  // To be displayed in the right side panel
+  // For the markers list in the right side panel
   this.markersOnMap = ko.observableArray([]);
 
   this.favourites = ko.observableArray([]); // Favourite places
   this.favIds = ko.observableArray([]); // IDs of favourite places
 
-  this.openLeftPanel = function() {
-    var panel = $('#left-panel');
-    panel.animate({left: '0'});
-    panel.on('swipeleft', function() {
-      panel.animate({left: '-300px'});
-    });
-    $('#map').click(function() {
-      panel.animate({left: '-300px'});
-    });
-  };
-
-  this.openRightPanel = function() {
-    var panel = $('#right-panel');
-    panel.animate({right: '0'});
-    panel.on('swiperight', function() {
-      panel.animate({right: '-300px'});
-    });
-    $('#map').click(function() {
-      panel.animate({right: '-300px'});
-    });
-  };
-
-  this.snippet = ko.observable(); // Input field in the right panel
+  this.leftPanelStyle = ko.observable('-300px');
+  this.rightPanelStyle = ko.observable('-300px');
 
   // Filter the list
-  this.leaveIfContains = function() {
+  this.snippet = ko.observable('');
+  ko.bindingHandlers.snippetChange = {
+    update: function() {
+      var snippet = self.snippet();
+      self.leaveIfContains(snippet);
+    }
+  };
+
+  this.leaveIfContains = function(snippet) {
     this.markersOnMap().forEach(function(marker) {
-      if (!marker.placeOnMap.name.toLowerCase().includes(self.snippet().toLowerCase())) {
+      if (!marker.placeOnMap.name.toLowerCase().includes(snippet.toLowerCase())) {
         marker.setMap(null);
         marker.onMap(false);
       } else {
@@ -107,20 +102,53 @@ function ViewModel() {
   // Fetch weather forecast
   this.forecasts = ko.observableArray([]);
   this.forecast = {date: ko.observable(), icon: ko.observable(), conditions: ko.observable(), temperature: ko.observable(), wind: ko.observable()};
-  this.forecastCreditText = ko.observable();
+  this.forecastCreditText = ko.observable('Loading weather forecast…');
   this.forecastCreditURL = ko.observable();
   this.forecastHeader = ko.observable();
-  this.buildForecast = function() {
+  this.forecastDisplay = ko.observable('flex');
+  this.nextForecast = '';
+  this.prevForecast = '';
+  this.resetForecast = '';
+
+  this.forecastFallback = function(request) {
+    self.forecastDisplay('none');
+    self.forecasts([]);
+    self.forecast.date('');
+    self.forecast.icon('');
+    self.forecast.conditions('');
+    self.forecast.temperature('');
+    self.forecast.wind('');
+    self.forecastHeader('');
+    self.forecastCreditText('Find weather forecast' +
+      (request.locality || request.country ? ' for ' + request.locality : '')  +
+      (request.locality && request.country ? ', ' : '') +
+      (request.country ? request.country : '') +
+      ' on Yr.no');
+    self.forecastCreditURL(request.url);
+  };
+
+  this.buildForecast = function(request) {
     $.ajax({
       // Avoiding CORS error, see: https://stackoverflow.com/questions/44553816/cross-origin-resource-sharing-when-you-dont-control-the-server
-      url: 'https://cors-anywhere.herokuapp.com/https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml'
+      url: 'https://cors-anywhere.herokuapp.com/' + request
     }).done(function(result) {
+      // Here and below, JavaScript methods are used for parsing the XML file, not for manipulating DOM elements. Please note that in the forecast file we receive, the data is stored in attributes, for instance:
+        /*
+        <time from="2017-09-04T18:00:00" to="2017-09-05T00:00:00" period="3">
+        <symbol number="3" numberEx="3" name="Partly cloudy" var="03n"/>
+        <precipitation value="0"/>
+        <windDirection deg="155.4" code="SSE" name="South-southeast"/>
+        <windSpeed mps="4.3" name="Gentle breeze"/>
+        <temperature unit="celsius" value="18"/>
+        <pressure unit="hPa" value="1018.2"/>
+        </time>
+        */
       var forecasts = $.makeArray(result.getElementsByTagName('forecast')[0].getElementsByTagName('tabular')[0].getElementsByTagName('time'));
       self.forecastCreditText(result.getElementsByTagName('credit')[0].getElementsByTagName('link')[0].getAttribute('text'));
       self.forecastCreditURL(result.getElementsByTagName('credit')[0].getElementsByTagName('link')[0].getAttribute('url'));
       self.forecastHeader('Weather in ' + result.getElementsByTagName('location')[0].getElementsByTagName('name')[0].childNodes[0].nodeValue);
       forecasts.forEach(function(forecast) {
-        // console.log(forecast); // Uncomment this line to see the structure of each forecast or open the link https://www.yr.no/place/Norway/S%C3%B8r-Tr%C3%B8ndelag/Trondheim/Trondheim/forecast.xml to see the whole XML file.
+        // console.log(forecast); // Uncomment this line to see the structure of each forecast or open the link https://www.yr.no/place/Norway/postnummer/7010/forecast.xml to see the whole XML file.
         var months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         var time,
           fc = {};
@@ -154,7 +182,7 @@ function ViewModel() {
       // Updating values for a single forecast
       var fcNum = 0;
       function appendForecast(num) {
-        $('.forecast-nav-icons').css('display', 'inline-block');
+        self.forecastDisplay('flex');
         self.forecast.date(self.forecasts()[fcNum].date);
         self.forecast.icon(self.forecasts()[fcNum].icon);
         self.forecast.conditions(self.forecasts()[fcNum].conditions);
@@ -162,28 +190,29 @@ function ViewModel() {
         self.forecast.wind(self.forecasts()[fcNum].wind);
       }
       appendForecast(fcNum);
-      $('.forecast-section').css('display', 'block');
 
       // Next/previous forecast, reset
-      $('.arrow-next').click(function() {
+      self.nextForecast = function() {
         if (fcNum < self.forecasts().length - 1) {
           fcNum++;
           appendForecast(fcNum);
         }
-      });
+      };
 
-      $('.arrow-prev').click(function() {
+      self.prevForecast = function() {
         if (fcNum > 0) {
           fcNum--;
           appendForecast(fcNum);
         }
-      });
+      };
 
-      $('.refresh-icon').click(function() {
+      self.resetForecast = function() {
         fcNum = 0;
         appendForecast(fcNum);
-      });
-    }); // No need to fail(): the forecast won't appear if the request fails
+      };
+    }).fail(function() {
+      self.forecastFallback({url: 'https://www.yr.no'});
+    });
   };
 
   // Showing directions step-by-step in the right panel
@@ -205,33 +234,38 @@ function ViewModel() {
     $('#contact-me').popup('close');
   };
   this.sendMsg = function() {
-    database.ref('messages/' + Date.now()).set({
-      name: self.contactName(),
-      email: self.contactEmail(),
-      subject: self.contactSubj(),
-      message: self.contactMsg()
-    }).then(function() {
-      $('#popup-msg-success').css('display', 'block');
-      $('#popup-msg-success').css('opacity', 1);
-      setTimeout(function() {
-        $('#popup-msg-success').css('opacity', 0);
-        $('#popup-msg-success').css('display', 'none');
-      }, 2000);
-      self.clearMsg();
-    }).catch(function(error) {
-      // Change the 'Send' button (popup can be covered by the form)
-      $('.contact-send-btn').text('Error!');
-      $('.contact-send-btn').removeClass('ui-icon-arrow-r');
-      $('.contact-send-btn').addClass('ui-icon-alert');
-      $('.contact-send-btn').css('background-color', 'rgba(255, 162, 155, 0.5)');
-      setTimeout(function() {
-        $('.contact-send-btn').text('Send');
-        $('.contact-send-btn').removeClass('ui-icon-alert');
-        $('.contact-send-btn').addClass('ui-icon-arrow-r');
-        $('.contact-send-btn').css('background-color', '');
-      }, 2000);
-      console.log('Failed to send message: ' + error);
-    });
+    try {
+      database.ref('messages/' + Date.now()).set({
+        name: self.contactName(),
+        email: self.contactEmail(),
+        subject: self.contactSubj(),
+        message: self.contactMsg()
+      }).then(function() {
+        $('#popup-msg-success').css('display', 'block');
+        $('#popup-msg-success').css('opacity', 1);
+        setTimeout(function() {
+          $('#popup-msg-success').css('opacity', 0);
+          $('#popup-msg-success').css('display', 'none');
+        }, 2000);
+        self.clearMsg();
+      }).catch(function(error) {
+        // Change the 'Send' button (pop-up can be covered by the form)
+        $('.contact-send-btn').text('Error!');
+        $('.contact-send-btn').removeClass('ui-icon-arrow-r');
+        $('.contact-send-btn').addClass('ui-icon-alert');
+        $('.contact-send-btn').css('background-color', 'rgba(255, 162, 155, 0.5)');
+        setTimeout(function() {
+          $('.contact-send-btn').text('Send');
+          $('.contact-send-btn').removeClass('ui-icon-alert');
+          $('.contact-send-btn').addClass('ui-icon-arrow-r');
+          $('.contact-send-btn').css('background-color', '');
+        }, 2000);
+        console.log('Failed to send message: ' + error);
+      });
+    } catch (error) {
+      self.noFirebasePopup();
+      console.log(error);
+    }
   };
 
   // No favourites found
@@ -243,13 +277,29 @@ function ViewModel() {
       $('#popup-no-favs').css('display', 'none');
     }, 2000);
   };
-}
 
+  // Sign-in indicator
+  this.signinStatus = ko.observable('Not signed in. Favourites and messages will not work.');
+  this.noSignInPopup = function() {
+    $('#popup-no-signin').css('display', 'block');
+    $('#popup-no-signin').css('opacity', 1);
+    setTimeout(function() {
+      $('#popup-no-signin').css('opacity', 0);
+      $('#popup-no-signin').css('display', 'none');
+    }, 2000);
+  };
+
+  // Firebase error pop-up
+  this.noFirebasePopup = function() {
+    $('#popup-no-firebase').css('display', 'block');
+    $('#popup-no-firebase').css('opacity', 1);
+    setTimeout(function() {
+      $('#popup-no-firebase').css('opacity', 0);
+      $('#popup-no-firebase').css('display', 'none');
+    }, 2000);
+  };
+}
 var myViewModel = new ViewModel();
 ko.applyBindings(myViewModel);
 
-myViewModel.snippet.subscribe(function() {
-  myViewModel.leaveIfContains();
-});
-
-myViewModel.buildForecast();
+myViewModel.buildForecast('https://www.yr.no/place/Norway/postnummer/7010/forecast.xml');

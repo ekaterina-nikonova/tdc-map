@@ -46,9 +46,22 @@ h2 {
 
 /* Dimensions, padding and margins */
 
-body {
+body,
+.error-screen {
   width: 100vw;
   height: 100vh;
+}
+
+.error-screen {
+  background-color: #ddc;
+}
+
+.error-text {
+  position: absolute;
+  margin: auto;
+  top: 0; right: 0; bottom: 0; left: 0;
+  width: 250px;
+  height: 100px;
 }
 
 #map {
@@ -56,7 +69,7 @@ body {
   height: 100%;
 }
 
-.ui-page {
+#main-map {
   width: 100vw;
   height: 100vh;
 }
@@ -90,7 +103,7 @@ body {
   bottom: 0;
   background-color: #e3eaef;
   border-right: 1px solid #b6c9d9;
-  padding: 15px;
+  transition: all 0.5s linear;
 }
 
 #left-panel {
@@ -107,6 +120,7 @@ body {
 
 .panel-box {
   direction: ltr;
+  padding: 15px;
 }
 
 .pac-container {
@@ -133,6 +147,20 @@ body {
 
 #filter-only {
   margin-top: 0;
+}
+
+/* Sign-in indicator */
+
+.signin-status {
+  background-color: #eff;
+  padding: 10px;
+  width: 295px;
+  position: fixed;
+  bottom: 0;
+}
+
+#clear-map-btn {
+  margin-bottom: 100px; /*To give room to the status*/
 }
 
 /* List of markers (right panel) */
@@ -165,10 +193,6 @@ body {
 
 /* Weather forecast */
 
-.forecast-section {
-  display: none;
-}
-
 .forecast-main {
   background-color: white;
   text-align: center;
@@ -186,7 +210,7 @@ body {
 }
 
 .forecast-header-text {
-  display: inline-block;
+  display: inline;
   padding: 0 5px;
   margin: 0;
 }
@@ -194,7 +218,6 @@ body {
 .refresh-icon {
   font-size: 1em !important;
   padding: 0;
-  display: none;
 }
 
 .forecast-footnote {
@@ -204,7 +227,7 @@ body {
 }
 
 .yr-link {
-  font-size: 0.7em;
+  font-size: 0.8em;
   color: #9ab !important;
   text-decoration: none;
 }
@@ -221,7 +244,7 @@ body {
 
 .arrow {
   padding: 0;
-  display: none;
+  /*display: none;*/
 }
 
 .forecast-icon {

@@ -1,35 +1,54 @@
-firebase.auth().signInAnonymously().catch(function(error) {
-  // Handle Errors here.
-  var errorCode = error.code;
-  var errorMessage = error.message;
-  console.log('Error ' + errorCode + ': ' + errorMessage);
-});
+// Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDMYHVCZBMIioFSkJekODiR73YLBMAWkSA",
+    authDomain: "tdc-2017-map.firebaseapp.com",
+    databaseURL: "https://tdc-2017-map.firebaseio.com",
+    projectId: "tdc-2017-map",
+    storageBucket: "",
+    messagingSenderId: "41083302772"
+  };
+  try {
+    firebase.initializeApp(config);
+    var database = firebase.database();
 
-var favs; // To refer to favourites stored in the database
+    firebase.auth().signInAnonymously().catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      myViewModel.noSignInPopup();
+      myViewModel.signinStatus('Sign-in error ' + errorCode + ': ' + errorMessage)
+    });
 
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
-    // User is signed in.
-    var uid = user.uid;
-    favs = database.ref('users/' + uid + '/favs');
-    // Update myViewModel.favourites() when 'database/users/ui/favs' changes
-    favs.on('value', function(snapshot) {
-      if (snapshot.val()) {
-        myViewModel.favourites(Object.values(snapshot.val()));
-        // Update array with IDs
-        myViewModel.favIds([]);
-        myViewModel.favourites().forEach(function(place) {
-          myViewModel.favIds.push(place.place_id);
+    var favs; // To refer to favourites stored in the database
+
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is signed in.
+        myViewModel.signinStatus('Signed in as ' + (user.displayName ? user.displayName : 'user ' + user.uid));
+        var uid = user.uid;
+        favs = database.ref('users/' + uid + '/favs');
+        // Update myViewModel.favourites() when 'database/users/ui/favs' changes
+        favs.on('value', function(snapshot) {
+          if (snapshot.val()) {
+            myViewModel.favourites(Object.values(snapshot.val()));
+            // Update array with IDs
+            myViewModel.favIds([]);
+            myViewModel.favourites().forEach(function(place) {
+              myViewModel.favIds.push(place.place_id);
+            });
+          } else {
+            myViewModel.favourites('');
+            myViewModel.favIds('');
+          }
         });
       } else {
-        myViewModel.favourites('');
-        myViewModel.favIds('');
+        console.log('Signed out.');
       }
     });
-  } else {
-    console.log('Signed out.');
+  } catch(error) {
+    myViewModel.noFirebasePopup();
+    console.log(error);
   }
-});
 
 // Make "My location: Show/Hide" buttons a group, Hide disabled
 $('#my-location-group').controlgroup({
@@ -41,62 +60,16 @@ var map; // Has to be global to be used in ViewModel
 var morePlaces = false; // A token for repeating search when boundaries change. The feature is currently commented out.
 
 function initMap() {
-  // Map styles
-  var styles = [
-    {
-      featureType: 'all',
-      elementType: 'all',
-      stylers: [{ hue: '#e7ecf0' }]
-    },
-    {
-      featureType: 'poi',
-      elementType: 'all',
-      stylers: [{ saturation : -50 }]
-    },
-    {
-      featureType: 'road',
-      elementType: 'all',
-      stylers: [{ saturation: -70 }]
-    },
-    {
-      featureType: 'road',
-      elementType: 'geometry.stroke',
-      stylers: [{ lightness: 51 }]
-    },
-    {
-      featureType: 'transit',
-      elementType: 'all',
-      stylers: [{ saturation: -43 }]
-    },
-    {
-      featureType: 'transit.line',
-      elementType: 'geometry.fill',
-      stylers: [{ color: '#79baec' }]
-    },
-    {
-      featureType: 'water',
-      elementType: 'all',
-      stylers: [{ saturation: -60 }]
-    },
-    {
-      featureType: 'landscape.natural',
-      elementType: 'fill',
-      stylers: [{ hue: '#00ffdd' }]
-    },
-    {
-      featureType: 'poi.park',
-      elementType: 'fill',
-      stylers: [{ hue: '#00ff33' }]
-    }
-  ];
-
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 63.436602, lng: 10.398891},
-    styles: styles,
     zoom: 13,
     mapTypeControl: false,
     fullscreenControl: false
   });
+
+  $.ajax({
+    url: 'js/map-styles.js'
+  }).done(function() {map.setOptions({styles: mapStyles})});
 
   // Side panel controls are hidden when the full-size Street View is active, so that they do not cover the SV controls.
   map.getStreetView().addListener('visible_changed', function() {
@@ -122,28 +95,32 @@ function initMap() {
     var service = new google.maps.places.PlacesService(map);
     service.getDetails({placeId: place.place_id}, function(place, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK && place.website) {
+        console.log(place.website);
         $('#iw-facebook').attr('data-href', place.website);
         FB.XFBML.parse();
         $('.iw-pano-photos-share').append($('#iw-facebook').html());
       }
     });
     iw.setContent(
-      '<h1 class=\"iw-place-name\">' + name + '</h1>' +
+      '<article><h1 class=\"iw-place-name\">' + name + '</h1>' +
       '<h2 class=\"iw-place-type\"> &ndash; ' + type + '</h2>' +
       '<div class=\"iw-place-address\">' + address + '</div>' +
       '<div class=\"iw-pano-photos-share\">' +
       '<input id=\"iw-pano-photos-btn\" type=\"button\" value=\"Show photos\">' +
       '</div><div id=\"iw-panorama\"></div>' +
       '<div id=\"iw-notes\">' + notes + '</div>' +
-      '<div class=\"iw-directions\"><input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">' +
+      '<section class=\"iw-directions\"><input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">' +
       '<label for=\"iw-directions-mode\">Travel mode:</label>' +
       '<select id=\"iw-directions-mode\">' +
       '<option value=\"WALKING\">Walking</option>' +
       '<option value=\"DRIVING\">Driving</option>' +
       '<option value=\"TRANSIT\">Transit</option>' +
-      '<option value=\"BICYCLING\">Bicycling</option></select></div>'
+      '<option value=\"BICYCLING\">Bicycling</option></select>' +
+      '</section></article>'
     );
   };
+
+  var activeMarker; // The only active marker with opacity == 1
 
   var makeMarker = function(place) {
     var icon = place.custom_icon;
@@ -178,10 +155,16 @@ function initMap() {
       title: place.formatted_address,
       animation: google.maps.Animation.DROP,
       icon: icon,
+      opacity: 0.7,
       pic: 'panorama',
       placeOnMap: place // For linking the list of places to markers
     });
     marker.onMap = ko.observable(); // For showing/hiding on the list
+
+    window.addEventListener('click', function() {
+      // Marker becomes 'inactive' whenever the info window is closed
+      if (!iw.map) marker.setOpacity(0.7);
+    });
 
     // Change marker's appearance on hover
     marker.addListener('mouseover', function() {
@@ -303,7 +286,9 @@ function initMap() {
 
     // Show info window after a click on a marker
     marker.clickOnMarker = function() {
-      marker.setOpacity(0.5);
+      if (activeMarker) activeMarker.setOpacity(0.7);
+      activeMarker = marker;
+      marker.setOpacity(1);
       makeInfoWindow(place);
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       iw.open(map, marker);
@@ -347,12 +332,46 @@ function initMap() {
 
       map.addListener('click', function() {
         iw.close();
-        marker.setOpacity(1);
       });
       $('#iw-pano-photos-btn').click(function() {
         if (marker.pic === 'panorama') {
           showPhotos(marker);
         } else showPanorama(panoOptions, marker);
+      });
+
+      // Update the weather forecast
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({location: marker.position}, function(result, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          var country = '',
+            countryLong = '',
+            locality = '',
+            postcode = '',
+            request;
+          result[0].address_components.forEach(function(component) {
+            component.types.forEach(function(type) {
+              if (type === 'country') {
+                country = component.short_name;
+                countryLong = component.long_name;
+              }
+              if (type === 'locality') locality = component.long_name;
+              if (type === 'postal_code') postcode = component.long_name;
+            });
+          });
+          if (country === 'NO') {
+            // Weather request for Norway - by postal code
+            postcode = parseInt(postcode, 10);
+            request = 'https://www.yr.no/place/Norway/postnummer/' + postcode + '/forecast.xml';
+            myViewModel.buildForecast(request);
+          } else {
+            // Request for other countries - by country and locality
+            request = {};
+            request.locality = locality;
+            request.country = countryLong;
+            request.url = 'https://www.yr.no/soek/soek.aspx?sted=' + locality + '&land=' + country + '&sok=Search';
+            myViewModel.forecastFallback(request);
+          }
+        } else {myViewModel.forecastFallback({url: 'https://www.yr.no'})}
       });
     };
 
@@ -362,7 +381,7 @@ function initMap() {
 
   // Show favourites
   $('#show-favourites').click(function() {
-    if (myViewModel.favourites()) {
+    if (myViewModel.favourites().length !== 0) {
       clearMap();
       showMarkers(myViewModel.favourites());
     } else {

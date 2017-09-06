@@ -39,3 +39,17 @@ The initial locations are hard-coded in the _conf-data.js_ file. Using the Place
  - To test the **Directions** feature in the info window, overriding geolocation in the browser can be useful. For example, with coordinates of the Trondheim central train station (63.436598, 10.398436), step-by-step instructions for walking or bicycling will not be overwhelming.
 
  - Please note that **My location** marker is a special one: it is not present in the list in the right panel, cannot be marked as favourite and is not affected by such actions as clearing the map, filtering or search.
+
+# After the review: what has been done
+ - **List filter fixed**: a custom binding `data-bind="snippetChange: leaveIfContains"` together with `textInput: snippet` is used for tracking the change of the snippet instead of subscription to the `leaveIfContains()` function.
+ - **Marker's opacity reset**: a variable `activeMarker` is used to track which marker is active, together with a `window` event listener that tracks the state of the info window (when the info window is closed, markers become inactive.)
+ - **Location-specific Weather API**: weather forecast is now displayed for each marker's location on click. For Norway, a detailed forecast is displayed for each postal code. For other countries, a link to Yr.no is provided with the country and the location specified when available.
+ - **Weather API fallback**: a fallback function is added for the AJAX `.fail()` method. When the request fails or location data is not available, a generic link to Yr.no is displayed in the forecast section.
+ - **Semantic HTML markup**: added semantic HTML elements to _index.html_ file.
+ - **Contact me in How to use**: added instructions for using the contact form in the _How to use_ section.
+ - **Firebase fallback**: added fallback options (`try {} catch {}`and error pop-ups) for authentication and `myViewModel.sendMsg()`. Added a sign-in status at the bottom of the left panel with a warning about favourites and messages not working if the user is not signed in.
+ - **Google Maps fallback**: handler for map loading error in _conf-data.js_ (`mapError()` function.)
+ - **Map styles in a separate file**: the styles are stored in the `js/map-styles.js` file now which is accessed asynchronously, and applied in the `.done()` method.
+ - **KnockoutJS bindings instead of jQuery/JS DOM methods for**:
+  * Opening/closing side panels
+  * Weather forecast display (visibility, next/previous/reset)
