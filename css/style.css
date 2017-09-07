@@ -19,6 +19,19 @@ h2 {
   text-transform: uppercase;
 }
 
+h3 {
+  text-align: center;
+}
+
+h4 {
+  font-size: 1.1em;
+}
+
+h5 {
+  font-size: 1em;
+  text-indent: 1em;
+}
+
 .material-icons {
   font-family: "Material Icons" !important;
   font-size: 36px;
@@ -182,7 +195,7 @@ body,
 }
 
 .marker-list-item {
-  width: calc(100% - 45px);
+  width: 100%;
 }
 
 .add-to-fav,
@@ -374,7 +387,8 @@ iframe {
   list-style: circle;
 }
 
-#about-the-app a {
+#about-the-app a,
+#how-to-use a {
   text-decoration: none;
   vertical-align: baseline;
   font-weight: normal !important;

@@ -19,28 +19,11 @@
       myViewModel.signinStatus('Sign-in error ' + errorCode + ': ' + errorMessage);
     });
 
-    var favs; // To refer to favourites stored in the database
-
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         // User is signed in.
         myViewModel.signinStatus('Signed in as ' + (user.displayName ? user.displayName : 'user ' + user.uid));
         var uid = user.uid;
-        favs = database.ref('users/' + uid + '/favs');
-        // Update myViewModel.favourites() when 'database/users/ui/favs' changes
-        favs.on('value', function(snapshot) {
-          if (snapshot.val()) {
-            myViewModel.favourites(Object.values(snapshot.val()));
-            // Update array with IDs
-            myViewModel.favIds([]);
-            myViewModel.favourites().forEach(function(place) {
-              myViewModel.favIds.push(place.place_id);
-            });
-          } else {
-            myViewModel.favourites('');
-            myViewModel.favIds('');
-          }
-        });
       } else {
         console.log('Signed out.');
       }
@@ -58,6 +41,7 @@ $('#my-location-hide').addClass('ui-state-disabled');
 
 var map; // Has to be global to be used in ViewModel
 var morePlaces = false; // A token for repeating search when boundaries change. The feature is currently commented out.
+var initialMarkers = [];
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -67,9 +51,16 @@ function initMap() {
     fullscreenControl: false
   });
 
+  // Loading map styles
   $.ajax({
     url: 'js/map-styles.js'
-  }).done(function() {map.setOptions({styles: mapStyles});});
+  }).done(function() {map.setOptions({styles: mapStyles});}).fail(function() {map.setOptions({
+    styles: [{
+      featureType: 'all',
+      elementType: 'all',
+      stylers: [{hue: "#e7ecf0"}]
+    }]
+  });});
 
   // Side panel controls are hidden when the full-size Street View is active, so that they do not cover the SV controls.
   map.getStreetView().addListener('visible_changed', function() {
@@ -79,31 +70,19 @@ function initMap() {
   });
 
   var iw = new google.maps.InfoWindow({}); // Only one window exists at a time
-  var route = new google.maps.DirectionsRenderer({
-    polylineOptions: {
-      strokeColor: 'steelBlue'
-    }
-  });
 
   var makeInfoWindow = function(place) {
     var name = place.name ? place.name : '';
-    var type = place.types ? place.types[0].replace(/_/g, ' ') : '';
+    var type = place.types ? (' – ' + place.types[0].replace(/_/g, ' ')) : '';
     var address = place.formatted_address ? place.formatted_address : '';
     var notes = place.notes ? place.notes : '';
-    iw.maxWidth = (window.innerWidth * 0.8).toFixed();
     iw.setContent(
-      '<article><h1 class=\"iw-place-name\">' + name + '</h1>' +
-      '<h2 class=\"iw-place-type\"> &ndash; ' + type + '</h2>' +
-      '<div class=\"iw-place-address\">' + address + '</div>' +
-      '<div id=\"iw-notes\">' + notes + '</div>' +
-      '<section class=\"iw-directions\"><input id=\"iw-directions-btn\" type=\"button\" value=\"Show directions\">' +
-      '<label for=\"iw-directions-mode\">Travel mode:</label>' +
-      '<select id=\"iw-directions-mode\">' +
-      '<option value=\"WALKING\">Walking</option>' +
-      '<option value=\"DRIVING\">Driving</option>' +
-      '<option value=\"TRANSIT\">Transit</option>' +
-      '<option value=\"BICYCLING\">Bicycling</option></select>' +
-      '</section></article>'
+      '<article>' +
+        '<h2 class=\"iw-place-name\">' + name + '</h2>' +
+        '<h3 class=\"iw-place-type\">' + type + '</h3>' +
+        '<div class=\"iw-place-address\">' + address + '</div>' +
+        '<div id=\"iw-notes\">' + notes + '</div>' +
+      '</article>'
     );
   };
 
@@ -160,75 +139,14 @@ function initMap() {
       marker.setAnimation('none');
     });
 
-    // Add to / remove from favourites (Firebase)
-    marker.addToFav = function(data, event) {
-      // Some locations' properties (lat, lng) are functions which cannot be pushed to the database
-      var latitude = typeof(data.placeOnMap.geometry.location.lat) === 'function' ? data.placeOnMap.geometry.location.lat() : data.placeOnMap.geometry.location.lat;
-      var longitude = typeof(data.placeOnMap.geometry.location.lng) === 'function' ? data.placeOnMap.geometry.location.lng() : data.placeOnMap.geometry.location.lng;
-      favs.push({
-        name: data.placeOnMap.name,
-        types: data.placeOnMap.types,
-        formatted_address: data.placeOnMap.formatted_address,
-        geometry: {location: {lat: latitude, lng: longitude}},
-        place_id: data.placeOnMap.place_id
-      });
-    };
-
-    marker.removeFromFav = function(data, event) {
-      var placeID = data.placeOnMap.place_id;
-      favs.once('value').then(function(snapshot) {
-        snapshot.forEach(function(child) {
-          if (child.val().place_id === placeID) {
-            favs.ref.child(child.key).remove();
-          }
-        });
-      });
-    };
-
     // Show info window after a click on a marker
     marker.clickOnMarker = function() {
       if (activeMarker) activeMarker.setOpacity(0.7);
       activeMarker = marker;
       marker.setOpacity(1);
       makeInfoWindow(place);
+      iw.setOptions({maxWidth: (window.innerWidth * 0.5).toFixed()});
       iw.open(map, marker);
-
-      // 'Show directions' button
-      $('#iw-directions-btn').click(function() {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
-            var origin = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
-            var directionsService = new google.maps.DirectionsService();
-            directionsService.route({
-              origin: origin,
-              destination: place.geometry.location,
-              travelMode: $('#iw-directions-mode').val()
-            }, function(response, status) {
-              if (status === google.maps.DirectionsStatus.OK) {
-                clearMap();
-                route.setMap(map);
-                route.setDirections(response);
-                myViewModel.dirInstructions.removeAll();
-                myViewModel.dirInstructionsHeader(
-                  response.request.travelMode + ': ' +
-                  response.routes[0].legs[0].distance.text + ', ' +
-                  response.routes[0].legs[0].duration.text
-                );
-                myViewModel.dirInstructionsFrom(response.routes[0].legs[0].start_address);
-                myViewModel.dirInstructionsTo(response.routes[0].legs[0].end_address);
-                response.routes[0].legs[0].steps.forEach(function(step) {
-                  myViewModel.dirInstructions.push(step.instructions);
-                });
-              }
-            });
-          }, geocoderError);
-        } else {
-          alert('Geolocation is not supported.');
-        }
-      });
 
       map.addListener('click', function() {
         iw.close();
@@ -243,7 +161,6 @@ function initMap() {
             locality = '',
             postcode = '',
             request;
-            console.log(result[0]);
           result[0].address_components.forEach(function(component) {
             component.types.forEach(function(type) {
               if (type === 'country') {
@@ -256,7 +173,7 @@ function initMap() {
           });
           if (country === 'NO') {
             // Weather request for Norway - by postal code
-            postcode = parseInt(postcode, 10);
+            // postcode = parseInt(postcode, 10);
             request = 'https://www.yr.no/place/Norway/postnummer/' + postcode + '/forecast.xml';
             myViewModel.buildForecast(request);
           } else {
@@ -265,25 +182,15 @@ function initMap() {
             request.locality = locality;
             request.country = countryLong;
             request.url = 'https://www.yr.no/soek/soek.aspx?sted=' + locality + '&land=' + country + '&sok=Search';
-            myViewModel.forecastFallback(request);
+            myViewModel.forecastFallback(request, 'The place is not in Norway or the post code is missing.');
           }
-        } else {myViewModel.forecastFallback({url: 'https://www.yr.no'});}
+        } else {myViewModel.forecastFallback({url: 'https://www.yr.no'}, 'Something is wrong with the geocoder.');}
       });
     };
 
     marker.addListener('click', function() {this.clickOnMarker();});
     return marker;
   };
-
-  // Show favourites
-  $('#show-favourites').click(function() {
-    if (myViewModel.favourites().length !== 0) {
-      clearMap();
-      showMarkers(myViewModel.favourites());
-    } else {
-      myViewModel.noFavs();
-    }
-  });
 
   var clearMap = function() {
     myViewModel.markersOnMap().forEach(function(marker) {
@@ -292,7 +199,6 @@ function initMap() {
     });
     myViewModel.markersOnMap.removeAll();
     morePlaces = false;
-    route.setMap(null);
     myViewModel.dirInstructions.removeAll();
     myViewModel.dirInstructionsHeader('');
     myViewModel.dirInstructionsFrom('');
@@ -304,8 +210,8 @@ function initMap() {
     var bounds = new google.maps.LatLngBounds();
     // If there are no markers to display, the map still covers the senter of Trondheim
     if (places.length === 0) {
-      bounds.extend(myViewModel.confPlaces()[0].geometry.location);
-      bounds.extend(myViewModel.confPlaces()[6].geometry.location);
+      bounds.extend({lat: 63.4400274, lng: 10.4024274});
+      bounds.extend({lat: 63.432715, lng: 10.397460});
     }
     places.forEach(function(place) {
       var marker = makeMarker(place);
@@ -321,13 +227,12 @@ function initMap() {
   };
 
   // Showing initial markers on the map
-  showMarkers(myViewModel.confPlaces());
-
-  $('#show-conf').click(function() {
-    clearMap();
-    showMarkers(myViewModel.confPlaces());
-  });
-  $('#clear-map-btn').click(clearMap);
+  $.ajax({
+    url: 'js/conf-places.js'
+  }).done(function() {
+    initialMarkers = confPlaces;
+    showMarkers(initialMarkers);
+  }).fail(function() {alert('Couldn\'t load markers. Try to find places in the left side panel (Show places).');});
 
   // Find more places
   var mapBounds;
@@ -336,9 +241,12 @@ function initMap() {
     mapBounds = map.getBounds();
     // if (morePlaces) findMorePlaces();
   });
+  var placeInput = document.getElementById('find-more-places');
+  var searchBox = new google.maps.places.SearchBox(placeInput);
   var findMorePlaces = function() {
     clearMap();
     morePlaces = true;
+    mapBounds = map.getBounds();
     searchBox.setBounds(mapBounds);
     var places = searchBox.getPlaces();
     var filteredPlaces = []; // No places outside bounds should be displayed
@@ -349,76 +257,5 @@ function initMap() {
     });
     showMarkers(filteredPlaces);
   };
-  var placeInput = document.getElementById('find-more-places');
-  var searchBox = new google.maps.places.SearchBox(placeInput);
-  $('#find-more-places').click(function() {
-    mapBounds = map.getBounds();
-    searchBox.setBounds(mapBounds);
-  });
   searchBox.addListener('places_changed', findMorePlaces);
-
-  // My position: 'Show my location' button and directions
-  function geocoderError(error) {
-    var errorText;
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-      errorText = 'Access denied.';
-      break;
-      case error.POSITION_UNAVAILABLE:
-      errorText = 'Location info unavailable.';
-      break;
-      case error.TIMEOUT:
-      errorText = 'Request timed out.';
-      break;
-      default:
-      errorText = 'Unknown error.';
-    }
-    alert(errorText);
-  }
-  var myPosition,
-    currentPlace,
-    markerCurrentPlace = new google.maps.Marker();
-  $('#my-location-show').click(function() {
-    markerCurrentPlace.setMap(null);
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        myPosition = position;
-        var myLocation = {
-          lat: myPosition.coords.latitude,
-          lng: myPosition.coords.longitude
-        };
-        currentPlace = {
-          name: 'My position',
-          types: ['i_am_here_now'],
-          geometry: {location: myLocation},
-          custom_icon: 'img/my-position.png',
-          place_id: '',
-          formatted_address: ''
-        };
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode({location: myLocation}, function(results, status) {
-          if (status === google.maps.GeocoderStatus.OK) {
-            if (results[0]) {
-              currentPlace.formatted_address = results[0].formatted_address;
-              currentPlace.place_id = results[0].place_id;
-            }
-          } else currentPlace[0].formatted_address = 'No address found.';
-        });
-        // The marker is displayed separately, it's not in the list and clearMap() does not affect it.
-        markerCurrentPlace = makeMarker(currentPlace);
-        markerCurrentPlace.setMap(map);
-        map.setCenter(markerCurrentPlace.getPosition());
-        map.setZoom(15);
-        $('#my-location-hide').removeClass('ui-state-disabled');
-        $('#my-location-hide').click(function() {
-          markerCurrentPlace.setMap(null);
-          $('#my-location-hide').addClass('ui-state-disabled');
-        });
-      }, geocoderError);
-    } else {
-      // If geolocation isn't supported, the position of the sentral station is used as a default location and the user is alerted
-      myPosition = myViewModel.confPlaces()[1].geometry.location;
-      alert('Geolocation is not supported.');
-    }
-  });
 }

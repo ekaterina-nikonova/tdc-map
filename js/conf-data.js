@@ -7,73 +7,20 @@ function ViewModel() {
     return 'Couldn\'t load the map. Try to reload the page. Alternatively, you can also use maps.google.com or Maps app.';
   };
 
-
-  // Places for the initial array of markers
-  this.confPlaces = ko.observableArray([
-    { // Clarion Hotel & Congress
-      name: 'Clarion Hotel & Congress',
-      types: ['venue'],
-      formatted_address: 'Brattørkaia 1, 7010 Trondheim, Norway',
-      geometry: {location: {lat: 63.4400274, lng: 10.4024274}},
-      place_id: 'ChIJq3jrGHYxbUYRWCokKUAb-00',
-      notes: 'The Conference venue: Monday 30 October at 9:00–18:00'
-    },
-    { // Central station
-      name: 'Trondheim Sentralstasjon',
-      types: ['train_station'],
-      formatted_address: 'Fosenkaia 1, 7010 Trondheim',
-      geometry: {location: {lat: 63.4367, lng: 10.3988199}},
-      place_id: 'ChIJ8QoyqZ0xbUYRzsViX0zp1e8',
-      notes: 'Trains from Værnes airport arrive at 6:32, 6:53, 7:32, 7:47, 8:00 and 8:32'
-    },
-    { // Bus station
-      name: 'Bussterminal',
-      types: ['bus_station'],
-      formatted_address: '7010 Trondheim, S 13',
-      geometry: {location: {lat: 63.4360928, lng: 10.4011951}},
-      place_id: 'ChIJo-Y7M5wxbUYRYcW5XF9iHSk',
-      notes: 'Buses 3, 19, 46, 48, 54, 55, 60, 75, 92, 94, 310, 320, 330, 340, 350, 410, 450, 470, 480, 4101'
-    },
-    // Places that open before 9 AM
-    { // Godt Brød bakery
-      name: 'Godt Brød Bakeriet',
-      types: ['Bakery'],
-      formatted_address: 'Thomas Angells gate 16',
-      geometry: {location: {lat: 63.4328076, lng: 10.3981416}},
-      place_id: 'ChIJD6jnjpsxbUYRnbiHT9RoYmk',
-      notes: 'Opens at 6 AM'
-    },
-    { // Starbucks
-      name: 'Starbucks',
-      types: ['Cafe'],
-      formatted_address: 'Kongens gate 14B',
-      geometry: {location: {lat: 63.4306006, lng: 10.3970648}},
-      place_id: 'ChIJWwkjs5sxbUYRQfhT0Rg143o',
-      notes: 'Opens at 7:00'
-    },
-    { // Café le Frère
-      name: 'Café le Frère',
-      types: ['Cafe'],
-      formatted_address: 'Søndre gate 27',
-      geometry: {location: {lat: 63.4343469, lng: 10.4004243}},
-      place_id: 'ChIJ7X0oFJwxbUYR4h2FMXC0cKc',
-      notes: 'Coffee bar, opens at 8:00'
-    },
-    { // Big Bite
-      name: 'Big Bite',
-      types: ['Restaurant'],
-      formatted_address: 'Nordre gate 11',
-      geometry: {location: {lat: 63.432715, lng: 10.397460}},
-      place_id: 'ChIJXemij5sxbUYRxhSYKU_x5OE',
-      notes: 'Opens at 7:30'
-    }
-  ]);
+  this.clearMap = function() {
+    self.markersOnMap().forEach(function(marker) {
+      marker.setMap(null);
+      marker.onMap(false);
+    });
+    self.markersOnMap.removeAll();
+    self.dirInstructions.removeAll();
+    self.dirInstructionsHeader('');
+    self.dirInstructionsFrom('');
+    self.dirInstructionsTo('');
+  };
 
   // For the markers list in the right side panel
   this.markersOnMap = ko.observableArray([]);
-
-  this.favourites = ko.observableArray([]); // Favourite places
-  this.favIds = ko.observableArray([]); // IDs of favourite places
 
   this.leftPanelStyle = ko.observable('-300px');
   this.rightPanelStyle = ko.observable('-300px');
@@ -90,10 +37,10 @@ function ViewModel() {
   this.leaveIfContains = function(snippet) {
     this.markersOnMap().forEach(function(marker) {
       if (!marker.placeOnMap.name.toLowerCase().includes(snippet.toLowerCase())) {
-        marker.setMap(null);
+        marker.setVisible(false);
         marker.onMap(false);
       } else {
-        marker.setMap(map);
+        marker.setVisible(true);
         marker.onMap(true);
       }
     });
@@ -110,7 +57,7 @@ function ViewModel() {
   this.prevForecast = '';
   this.resetForecast = '';
 
-  this.forecastFallback = function(request) {
+  this.forecastFallback = function(request, reason) {
     self.forecastDisplay('none');
     self.forecasts([]);
     self.forecast.date('');
@@ -119,7 +66,7 @@ function ViewModel() {
     self.forecast.temperature('');
     self.forecast.wind('');
     self.forecastHeader('');
-    self.forecastCreditText('Find weather forecast' +
+    self.forecastCreditText(reason + ' Find weather forecast' +
       (request.locality || request.country ? ' for ' + request.locality : '')  +
       (request.locality && request.country ? ', ' : '') +
       (request.country ? request.country : '') +
@@ -132,6 +79,7 @@ function ViewModel() {
       // Avoiding CORS error, see: https://stackoverflow.com/questions/44553816/cross-origin-resource-sharing-when-you-dont-control-the-server
       url: 'https://cors-anywhere.herokuapp.com/' + request
     }).done(function(result) {
+      self.forecasts([]);
       // Here and below, JavaScript methods are used for parsing the XML file, not for manipulating DOM elements. Please note that in the forecast file we receive, the data is stored in attributes, for instance:
         /*
         <time from="2017-09-04T18:00:00" to="2017-09-05T00:00:00" period="3">
@@ -211,7 +159,7 @@ function ViewModel() {
         appendForecast(fcNum);
       };
     }).fail(function() {
-      self.forecastFallback({url: 'https://www.yr.no'});
+      self.forecastFallback({url: 'https://www.yr.no'}, 'Couldn\'t fetch weather data.');
     });
   };
 
@@ -231,7 +179,7 @@ function ViewModel() {
     self.contactEmail('');
     self.contactSubj('');
     self.contactMsg('');
-    $('#contact-me').popup('close');
+    $('#contact-me').popup('close'); // This is a jQuery method, requires a jQuery object
   };
   this.sendMsg = function() {
     try {
@@ -241,25 +189,10 @@ function ViewModel() {
         subject: self.contactSubj(),
         message: self.contactMsg()
       }).then(function() {
-        $('#popup-msg-success').css('display', 'block');
-        $('#popup-msg-success').css('opacity', 1);
-        setTimeout(function() {
-          $('#popup-msg-success').css('opacity', 0);
-          $('#popup-msg-success').css('display', 'none');
-        }, 2000);
+        alert('Message sent.');
         self.clearMsg();
       }).catch(function(error) {
-        // Change the 'Send' button (pop-up can be covered by the form)
-        $('.contact-send-btn').text('Error!');
-        $('.contact-send-btn').removeClass('ui-icon-arrow-r');
-        $('.contact-send-btn').addClass('ui-icon-alert');
-        $('.contact-send-btn').css('background-color', 'rgba(255, 162, 155, 0.5)');
-        setTimeout(function() {
-          $('.contact-send-btn').text('Send');
-          $('.contact-send-btn').removeClass('ui-icon-alert');
-          $('.contact-send-btn').addClass('ui-icon-arrow-r');
-          $('.contact-send-btn').css('background-color', '');
-        }, 2000);
+        alert('Failed to send.');
         console.log('Failed to send message: ' + error);
       });
     } catch (error) {
@@ -268,35 +201,15 @@ function ViewModel() {
     }
   };
 
-  // No favourites found
-  this.noFavs = function() {
-    $('#popup-no-favs').css('display', 'block');
-    $('#popup-no-favs').css('opacity', 1);
-    setTimeout(function() {
-      $('#popup-no-favs').css('opacity', 0);
-      $('#popup-no-favs').css('display', 'none');
-    }, 2000);
-  };
-
   // Sign-in indicator
-  this.signinStatus = ko.observable('Not signed in. Favourites and messages will not work.');
+  this.signinStatus = ko.observable('Not signed in. Messages will not be sent.');
   this.noSignInPopup = function() {
-    $('#popup-no-signin').css('display', 'block');
-    $('#popup-no-signin').css('opacity', 1);
-    setTimeout(function() {
-      $('#popup-no-signin').css('opacity', 0);
-      $('#popup-no-signin').css('display', 'none');
-    }, 2000);
+    alert('Sign-in failed.');
   };
 
-  // Firebase error pop-up
+  // Firebase error alert
   this.noFirebasePopup = function() {
-    $('#popup-no-firebase').css('display', 'block');
-    $('#popup-no-firebase').css('opacity', 1);
-    setTimeout(function() {
-      $('#popup-no-firebase').css('opacity', 0);
-      $('#popup-no-firebase').css('display', 'none');
-    }, 2000);
+    alert('Database error.');
   };
 }
 var myViewModel = new ViewModel();
