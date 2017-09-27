@@ -62,7 +62,7 @@ var morePlaces = false; // A token for repeating search when boundaries change. 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 63.436602, lng: 10.398891},
-    zoom: 13,
+    zoom: 5,
     mapTypeControl: false,
     fullscreenControl: false
   });
@@ -360,7 +360,6 @@ function initMap() {
           });
           if (country === 'NO') {
             // Weather request for Norway - by postal code
-            postcode = parseInt(postcode, 10);
             request = 'https://www.yr.no/place/Norway/postnummer/' + postcode + '/forecast.xml';
             myViewModel.buildForecast(request);
           } else {
@@ -394,6 +393,7 @@ function initMap() {
       marker.setMap(null);
       marker.onMap(false);
     });
+    myViewModel.startPlaces([]);
     myViewModel.markersOnMap.removeAll();
     morePlaces = false;
     route.setMap(null);
@@ -406,10 +406,10 @@ function initMap() {
   // Showing markers on map, adding them to ViewModel arrays for tracking
   var showMarkers = function(places) {
     var bounds = new google.maps.LatLngBounds();
-    // If there are no markers to display, the map still covers the senter of Trondheim
+    // If there are no markers to display, the map covers the whole country
     if (places.length === 0) {
-      bounds.extend(myViewModel.confPlaces()[0].geometry.location);
-      bounds.extend(myViewModel.confPlaces()[6].geometry.location);
+      bounds.extend({lat: 70.882167, lng: 29.901751});
+      bounds.extend({lat: 58.231695, lng: 4.617132});
     }
     places.forEach(function(place) {
       var marker = makeMarker(place);
@@ -425,11 +425,35 @@ function initMap() {
   };
 
   // Showing initial markers on the map
-  showMarkers(myViewModel.confPlaces());
+  var fetchInitialMarkers = function(searchArea) {
+      var request = {
+          bounds: searchArea,
+          query: 'software companies Norway'
+      };
+      console.log(request);
+      service = new google.maps.places.PlacesService(map);
+      service.nearbySearch(request, function(results, status) {
+          if (status == google.maps.places.PlacesServiceStatus.OK) {
+              results.forEach(function(result) {
+                  myViewModel.startPlaces.push(result);
+              })
+              showMarkers(myViewModel.startPlaces());
+          }
+      });
+  };
+  var initialBounds = {
+      north: 70.882167,
+      south: 58.231695,
+      east: 29.901751,
+      west: 4.617132
+  }
+  fetchInitialMarkers(initialBounds);
 
-  $('#show-conf').click(function() {
+  $('#repeat-search').click(function() {
     clearMap();
-    showMarkers(myViewModel.confPlaces());
+    var bounds = map.getBounds();
+    console.log(bounds);
+    fetchInitialMarkers(bounds);
   });
   $('#clear-map-btn').click(clearMap);
 
@@ -520,8 +544,8 @@ function initMap() {
         });
       }, geocoderError);
     } else {
-      // If geolocation isn't supported, the position of the sentral station is used as a default location and the user is alerted
-      myPosition = myViewModel.confPlaces()[1].geometry.location;
+      // If geolocation isn't supported, the default position is used and the user is alerted
+      myPosition = myViewModel.startPlaces()[1].geometry.location;
       alert('Geolocation is not supported.');
     }
   });

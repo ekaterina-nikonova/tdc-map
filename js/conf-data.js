@@ -9,65 +9,7 @@ function ViewModel() {
 
 
   // Places for the initial array of markers
-  this.confPlaces = ko.observableArray([
-    { // Clarion Hotel & Congress
-      name: 'Clarion Hotel & Congress',
-      types: ['venue'],
-      formatted_address: 'Brattørkaia 1, 7010 Trondheim, Norway',
-      geometry: {location: {lat: 63.4400274, lng: 10.4024274}},
-      place_id: 'ChIJq3jrGHYxbUYRWCokKUAb-00',
-      notes: 'The Conference venue: Monday 30 October at 9:00–18:00'
-    },
-    { // Central station
-      name: 'Trondheim Sentralstasjon',
-      types: ['train_station'],
-      formatted_address: 'Fosenkaia 1, 7010 Trondheim',
-      geometry: {location: {lat: 63.4367, lng: 10.3988199}},
-      place_id: 'ChIJ8QoyqZ0xbUYRzsViX0zp1e8',
-      notes: 'Trains from Værnes airport arrive at 6:32, 6:53, 7:32, 7:47, 8:00 and 8:32'
-    },
-    { // Bus station
-      name: 'Bussterminal',
-      types: ['bus_station'],
-      formatted_address: '7010 Trondheim, S 13',
-      geometry: {location: {lat: 63.4360928, lng: 10.4011951}},
-      place_id: 'ChIJo-Y7M5wxbUYRYcW5XF9iHSk',
-      notes: 'Buses 3, 19, 46, 48, 54, 55, 60, 75, 92, 94, 310, 320, 330, 340, 350, 410, 450, 470, 480, 4101'
-    },
-    // Places that open before 9 AM
-    { // Godt Brød bakery
-      name: 'Godt Brød Bakeriet',
-      types: ['Bakery'],
-      formatted_address: 'Thomas Angells gate 16',
-      geometry: {location: {lat: 63.4328076, lng: 10.3981416}},
-      place_id: 'ChIJD6jnjpsxbUYRnbiHT9RoYmk',
-      notes: 'Opens at 6 AM'
-    },
-    { // Starbucks
-      name: 'Starbucks',
-      types: ['Cafe'],
-      formatted_address: 'Kongens gate 14B',
-      geometry: {location: {lat: 63.4306006, lng: 10.3970648}},
-      place_id: 'ChIJWwkjs5sxbUYRQfhT0Rg143o',
-      notes: 'Opens at 7:00'
-    },
-    { // Café le Frère
-      name: 'Café le Frère',
-      types: ['Cafe'],
-      formatted_address: 'Søndre gate 27',
-      geometry: {location: {lat: 63.4343469, lng: 10.4004243}},
-      place_id: 'ChIJ7X0oFJwxbUYR4h2FMXC0cKc',
-      notes: 'Coffee bar, opens at 8:00'
-    },
-    { // Big Bite
-      name: 'Big Bite',
-      types: ['Restaurant'],
-      formatted_address: 'Nordre gate 11',
-      geometry: {location: {lat: 63.432715, lng: 10.397460}},
-      place_id: 'ChIJXemij5sxbUYRxhSYKU_x5OE',
-      notes: 'Opens at 7:30'
-    }
-  ]);
+  this.startPlaces = ko.observableArray([]);
 
   // For the markers list in the right side panel
   this.markersOnMap = ko.observableArray([]);
@@ -132,17 +74,6 @@ function ViewModel() {
       // Avoiding CORS error, see: https://stackoverflow.com/questions/44553816/cross-origin-resource-sharing-when-you-dont-control-the-server
       url: 'https://cors-anywhere.herokuapp.com/' + request
     }).done(function(result) {
-      // Here and below, JavaScript methods are used for parsing the XML file, not for manipulating DOM elements. Please note that in the forecast file we receive, the data is stored in attributes, for instance:
-        /*
-        <time from="2017-09-04T18:00:00" to="2017-09-05T00:00:00" period="3">
-        <symbol number="3" numberEx="3" name="Partly cloudy" var="03n"/>
-        <precipitation value="0"/>
-        <windDirection deg="155.4" code="SSE" name="South-southeast"/>
-        <windSpeed mps="4.3" name="Gentle breeze"/>
-        <temperature unit="celsius" value="18"/>
-        <pressure unit="hPa" value="1018.2"/>
-        </time>
-        */
       var forecasts = $.makeArray(result.getElementsByTagName('forecast')[0].getElementsByTagName('tabular')[0].getElementsByTagName('time'));
       self.forecastCreditText(result.getElementsByTagName('credit')[0].getElementsByTagName('link')[0].getAttribute('text'));
       self.forecastCreditURL(result.getElementsByTagName('credit')[0].getElementsByTagName('link')[0].getAttribute('url'));
@@ -302,4 +233,4 @@ function ViewModel() {
 var myViewModel = new ViewModel();
 ko.applyBindings(myViewModel);
 
-myViewModel.buildForecast('https://www.yr.no/place/Norway/postnummer/7010/forecast.xml');
+myViewModel.buildForecast('https://www.yr.no/place/Norway/postnummer/0252/forecast.xml');
